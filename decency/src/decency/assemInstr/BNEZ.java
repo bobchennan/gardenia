@@ -2,7 +2,7 @@ package decency.assemInstr;
 
 public class BNEZ extends AssemInstr {
 	public Reg src;
-	public Label label;
+	public String label;
 
 	@Override
 	public String toString() {

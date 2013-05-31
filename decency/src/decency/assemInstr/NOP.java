@@ -1,10 +1,8 @@
 package decency.assemInstr;
 
-public class Label {
-	public String s;
-
+public class NOP extends AssemInstr {
 	@Override
 	public String toString() {
-		return s;
+		return "nop";
 	}
 }
