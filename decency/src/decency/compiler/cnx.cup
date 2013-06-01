@@ -1,0 +1,151 @@
+package decency.compiler;
+
+import java.io.*;
+import decency.compiler.*;
+
+action code {:
+  static decency.compiler.Symbol symbol(String s) {
+    return decency.compiler.Symbol.symbol(s);
+  }
+:};
+
+parser code {:
+  public void report_error(String message, Object info) {
+    StringBuffer m = new StringBuffer("\tParsing error");
+    if (info instanceof java_cup.runtime.Symbol) {
+      java_cup.runtime.Symbol s = (java_cup.runtime.Symbol) info;
+
+      if (s.left >= 0) {
+        m.append(" in line " + (s.left +1 ));
+        if (s.right >= 0) {
+          m.append(", column " + (s.right + 1));
+        }
+      }
+    }
+    m.append(" : " + message);
+    System.err.println(m);
+  }
+	public void report_fatal_error(String message, Object info) {
+		fatalError = true;
+		report_error(message, info);
+		System.exit(1);
+	}
+
+	public boolean error = false;
+	public boolean fatalError = false;
+
+	public Parser(InputStream inp) {
+		this(new Yylex(inp));
+	}
+:};
+
+terminal INC, DEC, RETURN, FOR, GT, LT, INT, SEMICOLON, LPAREN, RPAREN, LBRACK, RBRACK, COMMA, ASSIGN, LBRACE, RBRACE, WHILE, ADDASS, SUBASS, MULASS, PLUS, MINUS, ASTER;
+terminal String ID;
+terminal int NUM;
+
+non terminal Program program;
+non terminal Declaration declaration;
+non terminal Function_definition function_definition;
+non terminal Init_declarators init_declarators;
+non terminal Init_declarator init_declarator;
+non terminal Declarator declarator;
+non terminal Constant_expressions constant_expressions;
+non terminal Expression_statement expression_statement;
+non terminal Compound_statement compound_statement;
+non terminal Declarations declarations;
+non terminal Statements statements;
+non terminal Iteration_statement iteration_statement;
+non terminal Expression expression;
+non terminal Return_statement return_statement;
+non terminal Assignment_expression assignment_expression;
+non terminal Assignment_operator assignment_operator;
+non terminal Postfix_expression postfix_expression;
+non terminal Primary_expression primary_expression;
+non terminal Statement statement;
+
+precedence left COMMA;
+precedence right ASSIGN,MULASS,ADDASS,SUBASS;
+precedence nonassoc LT,GT;
+
+start with program;
+
+program::= function_definition:x {:RESULT=new Program(x);:} 
+       | program:x function_definition:y {:RESULT=new Program(x,y);:}
+       ;
+
+declaration::= INT init_declarators:y SEMICOLON {:RESULT=new Declaration(y);:}
+           ;
+
+function_definition::= INT ID:y LPAREN RPAREN compound_statement:z {:RESULT=new Function_definition(new Id(symbol(y)),z);:}
+                   ;
+
+init_declarators::= init_declarators:x COMMA init_declarator:y {:RESULT=x.add(y);:}
+                | init_declarator:x {:RESULT=new Init_declarators(x);:}
+                ;
+
+init_declarator::= declarator:x ASSIGN expression:y {:RESULT=new Init_declarator(x,y);:}
+               | declarator:x {:RESULT=new Init_declarator(x);:}
+               ;
+
+declarator::= ID:x constant_expressions:y{:RESULT=new Declarator(new Id(symbol(x)),y);:}
+          | ID:x {:RESULT=new Declarator(new Id(symbol(x)), null);:}
+          ;
+
+constant_expressions ::= LBRACK primary_expression:x RBRACK  {:RESULT=new Constant_expressions(x);:}
+     | constant_expressions:x LBRACK primary_expression:y RBRACK {:RESULT=x.add(y);:}
+     ;
+
+statement::= expression_statement:x {:RESULT=x;:}
+         | compound_statement:x {:RESULT=x;:}
+         | iteration_statement:x {:RESULT=x;:}
+         | return_statement:x {:RESULT=x;:}
+         ;
+
+expression_statement::= assignment_expression:x SEMICOLON {:RESULT=new Expression_statement(x);:}
+                    | SEMICOLON {:RESULT=null;:}
+                    ;
+                    
+return_statement::= RETURN primary_expression:x {:RESULT=new Return_statement(x);:}
+				;
+
+compound_statement::= LBRACE declarations:x statements:y RBRACE {:RESULT=new Compound_statement(x,y);:};
+
+declarations::= /* empty */ {:RESULT=new Declarations();:}
+     | declarations:x declaration:y {:RESULT=x.add(y);:}
+     ;
+
+statements::= /* empty */ {:RESULT=new Statements();:}
+     | statements:x statement:y {:RESULT=x.add(y);:}
+     ;
+
+iteration_statement::= WHILE LPAREN assignment_expression:x RPAREN statement:y {:RESULT=new While_statement(x,y);:}
+                   | FOR LPAREN assignment_expression:x SEMICOLON assignment_expression:y SEMICOLON assignment_expression:z RPAREN statement:s {:RESULT=new For_statement(x,y,z,s);:}
+                   ;
+
+assignment_expression::= postfix_expression:x assignment_operator:y expression:z {:RESULT=new Assignment_expression(x,y,z);:}
+                     | primary_expression:x INC {:RESULT=new Assignment_expression(x,Assignment_operator.ADDASS,new Expression(new IntLiteral(1)));:}
+                     | primary_expression:x DEC {:RESULT=new Assignment_expression(x,Assignment_operator.SUBASS,new Expression(new IntLiteral(1)));:}
+                     | expression:x {:RESULT=new Assignment_expression(x);:}
+                     ;
+
+assignment_operator::= ASSIGN  {:RESULT=Assignment_operator.ASSIGN;:}
+                   | MULASS  {:RESULT=Assignment_operator.MULASS;:}
+                   | ADDASS  {:RESULT=Assignment_operator.ADDASS;:}
+                   | SUBASS  {:RESULT=Assignment_operator.SUBASS;:}
+                   ;
+
+expression::= postfix_expression:x PLUS postfix_expression:y {:RESULT=new Expression(0,x,y);:}
+		  | postfix_expression:x MINUS postfix_expression:y {:RESULT=new Expression(1,x,y);:}
+		  | postfix_expression:x ASTER postfix_expression:y {:RESULT=new Expression(2,x,y);:}
+		  | postfix_expression:x LT postfix_expression:y {:RESULT=new Expression(3,x,y);:}
+		  | postfix_expression:x GT postfix_expression:y {:RESULT=new Expression(4,x,y);:}
+		  | postfix_expression:x {:RESULT=new Expression(x);:}
+		  ;
+    	  
+postfix_expression::= postfix_expression:x LBRACK primary_expression:y RBRACK {:RESULT=new Array_expression(x,y);:}
+       			| primary_expression:x {:RESULT=x;:}
+       			;
+
+primary_expression::= ID:i {:RESULT=new Id(symbol(i));:}
+                   | NUM:x {:RESULT=new IntLiteral(x);:}
+                   ;
