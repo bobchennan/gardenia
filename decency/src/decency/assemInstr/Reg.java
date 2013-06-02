@@ -4,6 +4,10 @@ import decency.assembler.Util;
 
 public class Reg extends Operand {
 	public int reg;
+	
+	public Reg(int v){
+		reg = v;
+	}
 
 	@Override
 	public String toString() {

@@ -8,4 +8,11 @@ public class Array_expression extends Postfix_expression {
 		_x = x;
 		_y = y;
 	}
+	
+	public Id findName(){
+		if(_x instanceof Array_expression)
+			return ((Array_expression)_x).findName();
+		else
+			return (Id)_x;
+	}
 }
