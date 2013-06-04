@@ -35,10 +35,6 @@ public class Assembler {
 				gen((J) ai);
 			else if (ai instanceof MV)
 				gen((MV) ai);
-			else if (ai instanceof LWX)
-				gen((LWX) ai);
-			else if (ai instanceof SWX)
-				gen((SWX) ai);
 			else {
 				emit("");// NOP
 				System.err.println("Undefined assemble instruction.");
@@ -108,15 +104,5 @@ public class Assembler {
 		else
 			emit("1111" + ai.dst.gen() + Util.widen(((Imm) (ai.src)).imm, 19)
 					+ "1");
-	}
-
-	void gen(LWX ai) {
-		emit("0001" + ai.dst.gen() + ai.src1.gen() + ai.src2.gen()
-				+ ai.src3.gen());
-	}
-
-	void gen(SWX ai) {
-		emit("0010" + ai.dst.gen() + ai.src1.gen() + ai.src2.gen()
-				+ ai.src3.gen());
 	}
 }
