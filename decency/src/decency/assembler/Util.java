@@ -4,7 +4,13 @@ public class Util {
 	// convert num to binary with certain width.
 	public static String widen(int num, int width) {
 		String s = Integer.toBinaryString(num);
-		return new String(s.substring(s.length() - width));// TO DO
+		if (num < 0)
+			return new String(s.substring(s.length() - width));
+		StringBuffer sb = new StringBuffer();
+		for (int i = s.length(); i < width; ++i)
+			sb.append("0");
+		sb.append(s);
+		return sb.toString();
 	}
 
 	// add 0 to the end of string until the length of string is 32.
@@ -12,6 +18,6 @@ public class Util {
 		StringBuffer sb = new StringBuffer(s);
 		for (int i = s.length(); i < width; ++i)
 			sb.append("0");
-		return sb.toString();// TO DO
+		return sb.toString();
 	}
 }

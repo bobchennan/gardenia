@@ -16,10 +16,16 @@ public class Assembler {
 	public List<String> binCodeGen() {
 		counter = 0;
 		for (AssemInstr ai : assemCode) {
-			if (ai instanceof LABEL) {
+			if (ai instanceof LABEL)
 				labelTable.put(((LABEL) ai).label, counter);
+			else
+				++counter;
+		}
+		counter = 0;
+		for (AssemInstr ai : assemCode) {
+			if (ai instanceof LABEL)
 				continue;
-			} else if (ai instanceof ADD)
+			else if (ai instanceof ADD)
 				gen((ADD) ai);
 			else if (ai instanceof MUL)
 				gen((MUL) ai);
@@ -35,10 +41,10 @@ public class Assembler {
 				gen((J) ai);
 			else if (ai instanceof MV)
 				gen((MV) ai);
-			else {
+			else if (ai instanceof NOP)
 				emit("");// NOP
+			else
 				System.err.println("Undefined assemble instruction.");
-			}
 			++counter;
 		}
 		return binCode;
@@ -102,7 +108,7 @@ public class Assembler {
 		if (ai.src instanceof Reg)
 			emit("1111" + ai.dst.gen() + ((Reg) (ai.src)).gen());
 		else
-			emit("1111" + ai.dst.gen() + Util.widen(((Imm) (ai.src)).imm, 19)
+			emit("1111" + ai.dst.gen() + Util.widen(((Imm) (ai.src)).imm, 21)
 					+ "1");
 	}
 }
