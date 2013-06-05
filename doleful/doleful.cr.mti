@@ -1,0 +1,16 @@
+E:/gardenia/doleful/full_addder.v {1 {vlog -work work -vopt E:/gardenia/doleful/full_addder.v
+Model Technology ModelSim SE vlog 10.1a Compiler 2012.02 Feb 22 2012
+-- Compiling module full_adder
+
+Top level modules:
+	full_adder
+
+} {} {}} E:/gardenia/doleful/testbench.v {1 {vlog -work work -vopt E:/gardenia/doleful/testbench.v
+Model Technology ModelSim SE vlog 10.1a Compiler 2012.02 Feb 22 2012
+-- Compiling module full_adder
+-- Compiling module testbench
+
+Top level modules:
+	testbench
+
+} {} {}}

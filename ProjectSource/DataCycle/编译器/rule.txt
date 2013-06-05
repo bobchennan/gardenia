@@ -1,0 +1,73 @@
+add			000000
+sub			000000
+mult		000000
+div			000000
+addu		000000
+subu		000000
+multu		000000
+divu		000000
+and			000000
+or			000000
+xor			000000
+sl			000000
+srl			000000
+sra			000000
+src			000000
+
+b			000001
+bo			011001
+bno			011010
+bgtu		011011
+bletu		011100
+bgt			011101
+blet		011110
+call		001111
+
+lb			000010
+lbu			000011
+sb			000100
+lh			000101
+lhu			000110
+sh			000111
+lw			001000
+sw			001001
+addi		100000
+subi		100001
+muli		100010
+divi		100011
+addiu		101000
+subiu		101001
+muliu		101010
+diviu		101011
+andi		100100
+ori			100101
+xori		100111
+sli			101100
+srli		101101
+srai		101110
+srci		101111
+
+not			000000
+
+lhi			001010
+
+cmp			010000
+
+sysint		111111
+
+add			000000
+sub			000001
+mult		000010
+div			000011
+addu		001000
+subu		001001
+multu		001010
+divu		001011
+and			000100
+or			000101
+not			000110
+xor			000111
+sl			001100
+srl			001101
+sra			001110
+src			001111

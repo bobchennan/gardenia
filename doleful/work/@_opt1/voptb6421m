@@ -1,0 +1,57 @@
+m255
+K3
+13
+cModel Technology
+Z0 dC:\modeltech_10.1a\examples
+T_opt
+VhMlJZSBcIJ:Vzz@Hmif]T3
+04 9 4 work testbench fast 0
+=1-b870f4af7f25-51af6430-36d-8bc
+Z1 o-quiet -auto_acc_if_foreign -work work
+n@_opt
+Z2 OE;O;10.1a;51
+Z3 dC:\modeltech_10.1a\examples
+T_opt1
+VU]jfIa=920oGeF^TR3?G=1
+04 10 4 work full_adder fast 0
+=1-b870f4af7f25-51af69ca-13-174c
+R1
+n@_opt1
+R2
+vfull_adder
+I:gUCU2a]5_dhaSCnP4iLS0
+VNMW:TCXRdHao]1I3[6Q_<0
+Z4 dE:\gardenia\doleful
+Z5 w1370448918
+Ffull_addder.v
+Z6 8E:/gardenia/doleful/testbench.v
+Z7 FE:/gardenia/doleful/testbench.v
+L0 1
+Z8 OE;L;10.1a;51
+r1
+31
+Z9 !s108 1370448934.651000
+Z10 !s107 full_addder.v|E:/gardenia/doleful/testbench.v|
+Z11 !s90 -reportprogress|300|-work|work|-vopt|E:/gardenia/doleful/testbench.v|
+Z12 o-work work -L mtiAvm -L mtiOvm -L mtiUvm -L mtiUPF
+!i10b 1
+!s100 `EGNaLP?Vhi7V_blR0gYl3
+!s85 0
+vtestbench
+IPH2]8hNf>UhVE:SmP633N0
+VhGfW:390DM[oDMzegDH9`2
+R4
+R5
+R6
+R7
+L0 3
+R8
+r1
+31
+R9
+R10
+R11
+R12
+!i10b 1
+!s100 oJQzG2f3`60kOLAQlQJ?m1
+!s85 0
