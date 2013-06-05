@@ -1,8 +1,6 @@
 package decency.compiler;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.*;
 
 import decency.compiler.*;
@@ -215,8 +213,11 @@ public class Main {
 	}
 	
 	public static void main(String argv[]) throws IOException {
-		compile(argv[0]);
+		compile("test.c");
 		for(AssemInstr ll:l)
 			System.out.println(ll);
+		FileWriter fw = new FileWriter("test.s");
+		for(AssemInstr ll:l)
+			fw.write(ll.toString()+"\n");
 	}
 }
