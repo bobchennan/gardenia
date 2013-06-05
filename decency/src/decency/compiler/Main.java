@@ -84,13 +84,17 @@ public class Main {
 						dimen.add(right);
 						int bak = reguse;
 						emit(new MV(new Reg(reguse), new Imm(right-1)));
+						emit(new NOP());
 						emit(new BGT(new Reg(left), new Reg(reguse), l2.label));
+						emit(new NOP());
 						++reguse;
 						emit(l3);
 						visit(((For_statement) x)._st);
 						visit(((For_statement) x)._exp3);
 						emit(new BGT(new Reg(left), new Reg(bak), l2.label));
+						emit(new NOP());
 						emit(new J(l3.label));
+						emit(new NOP());
 						emit(l2);
 					}
 					else{
@@ -119,30 +123,37 @@ public class Main {
 					emit(new MV(new Reg(aa), new Imm(dict.get(a))));
 					emit(new MV(new Reg(bb), new Imm(dict.get(b))));
 					emit(new MV(new Reg(cc), new Imm(dict.get(c))));
-					emit(new LWX(new Reg(aij), new Reg(aa), new Reg(ai), new Reg(iter.get(1))));
+					emit(new NOP());
+					emit(new LW(new Reg(aij), new Reg(ai), new Reg(iter.get(1))));//assume aa = 0
 					emit(new ADD(new Reg(bb), new Reg(bb), new Reg(bj)));
 					emit(new ADD(new Reg(cc), new Reg(cc), new Reg(ci)));
+					emit(new NOP());
 					for(int i = 0; i <= k/K; ++i){
 						for(int j = i*K; j<(i+1)*K && j<k; ++j){
 							int idx = j-i*K+reguse;
 							emit(new LW(new Reg(idx), new Reg(bb), new Imm(j*4)));
 						}
+						emit(new NOP());
 						for(int j = i*K; j<(i+1)*K && j<k; ++j){
 							int idx = j-i*K+reguse;
 							emit(new MUL(new Reg(idx), new Reg(idx), new Reg(aij)));
 						}
+						emit(new NOP());
 						for(int j = i*K; j<(i+1)*K && j<k; ++j){
 							int idx = j-i*K+reguse+K;
 							emit(new LW(new Reg(idx), new Reg(cc), new Imm(j*4)));
 						}
+						emit(new NOP());
 						for(int j = i*K; j<(i+1)*K && j<k; ++j){
 							int idx = j-i*K+reguse;
 							emit(new ADD(new Reg(idx), new Reg(idx), new Reg(idx+K)));
 						}
+						emit(new NOP());
 						for(int j = i*K; j<(i+1)*K && j<k; ++j){
 							int idx = j-i*K+reguse+K;
 							emit(new SW(new Reg(idx), new Reg(cc), new Imm(j*4)));
 						}
+						emit(new NOP());
 					}
 				}
 			}
@@ -164,6 +175,7 @@ public class Main {
 	private static void makeMove(Operand dest, Expression src){
 		if(src.op == -1){
 			emit(new MV((Reg)dest, visit(src.x)));
+			emit(new NOP());
 		}
 		else{
 			if(src.x instanceof IntLiteral && (src.op==0 || src.op==2)){
@@ -172,8 +184,8 @@ public class Main {
 				src.y = tmp;
 			}
 			switch(src.op){
-				case 0: emit(new ADD((Reg)dest, (Reg)visit(src.x), visit(src.y)));break;
-				case 2: emit(new MUL((Reg)dest, (Reg)visit(src.x), visit(src.y)));break;
+				case 0: emit(new ADD((Reg)dest, (Reg)visit(src.x), visit(src.y)));emit(new NOP());break;
+				case 2: emit(new MUL((Reg)dest, (Reg)visit(src.x), visit(src.y)));emit(new NOP());break;
 				//to do
 			}
 		}
@@ -214,8 +226,8 @@ public class Main {
 	
 	public static void main(String argv[]) throws IOException {
 		compile("test.c");
-		for(AssemInstr ll:l)
-			System.out.println(ll);
+		//for(AssemInstr ll:l)
+		//	System.out.println(ll);
 		FileWriter fw = new FileWriter("test.s");
 		for(AssemInstr ll:l)
 			fw.write(ll.toString()+"\n");
