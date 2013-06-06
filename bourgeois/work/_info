@@ -1,0 +1,103 @@
+m255
+K3
+13
+cModel Technology
+dC:\modeltech_10.1a\examples
+T_opt
+VSo>m>@?RlBTSEgLJUM2zk3
+04 3 4 work CPU fast 0
+=1-b870f4af7f25-51b019e5-2dc-1054
+o-quiet -auto_acc_if_foreign -work work
+n@_opt
+OE;O;10.1a;51
+vclock
+I3[oj2gF4_6J;V0@?X3J=]0
+VadSo5hlY5lQ]=HLZgdk143
+Z0 dE:\gardenia\bourgeois
+w1370495447
+8E:/gardenia/bourgeois/clock.v
+FE:/gardenia/bourgeois/clock.v
+L0 3
+Z1 OE;L;10.1a;51
+r1
+31
+Z2 o-work work -L mtiAvm -L mtiOvm -L mtiUvm -L mtiUPF
+!s100 ^80Cj3BLChXJU4F4keO2W2
+!s108 1370495452.410000
+!s107 define.v|E:/gardenia/bourgeois/clock.v|
+!s90 -reportprogress|300|-work|work|-vopt|E:/gardenia/bourgeois/clock.v|
+!i10b 1
+!s85 0
+vCPU
+IA7loe7HidR:Z<beZCL?<I2
+VAkUP^]5QD=5CjohR<0>JG0
+Z3 dE:\gardenia\bourgeois
+w1370495353
+8E:/gardenia/bourgeois/CPU.v
+FE:/gardenia/bourgeois/CPU.v
+L0 5
+R1
+r1
+31
+R2
+n@c@p@u
+!s100 jWo9O?Eg6UlQZP:U_g7ol1
+!s108 1370495451.118000
+!s107 clock.v|instmem.v|define.v|E:/gardenia/bourgeois/CPU.v|
+!s90 -reportprogress|300|-work|work|-vopt|E:/gardenia/bourgeois/CPU.v|
+!i10b 1
+!s85 0
+vdatamem
+IjElbeil6gTYP`;kP^``jk1
+Vo?ACP>]::1^XcJ^=YHRnB2
+R3
+w1370493531
+8E:/gardenia/bourgeois/datamem.v
+FE:/gardenia/bourgeois/datamem.v
+L0 3
+R1
+r1
+31
+R2
+!s100 92Rc:bZ9ZM^mnFh3K1eDA0
+!s90 -reportprogress|300|-work|work|-vopt|E:/gardenia/bourgeois/datamem.v|
+!i10b 1
+!s85 0
+!s108 1370495452.658000
+!s107 define.v|E:/gardenia/bourgeois/datamem.v|
+vinstmem
+I67P]KI1dYz7DAAaGJYU:z1
+V@542R;_V:ZM[>SJF?5W[h1
+R3
+w1370494884
+8E:/gardenia/bourgeois/instmem.v
+FE:/gardenia/bourgeois/instmem.v
+L0 3
+R1
+r1
+31
+R2
+!s100 RE>j7ZNKKgzK<ETI62ln51
+!s108 1370495452.145000
+!s107 define.v|E:/gardenia/bourgeois/instmem.v|
+!s90 -reportprogress|300|-work|work|-vopt|E:/gardenia/bourgeois/instmem.v|
+!i10b 1
+!s85 0
+vtestbench
+I6z]IAbPH]SC9T6PfhzCX31
+VhGfW:390DM[oDMzegDH9`2
+R3
+w1370492172
+8E:/gardenia/bourgeois/testbench.v
+FE:/gardenia/bourgeois/testbench.v
+L0 5
+R1
+r1
+31
+R2
+!s108 1370493213.803000
+!s107 clock.v|instmem.v|define.v|CPU.v|E:/gardenia/bourgeois/testbench.v|
+!s90 -reportprogress|300|-work|work|-vopt|E:/gardenia/bourgeois/testbench.v|
+!s100 UFbF>=@86EOFVADkZXSSY0
+!i10b 1
+!s85 0
