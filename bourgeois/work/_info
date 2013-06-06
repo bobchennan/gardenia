@@ -4,9 +4,9 @@ K3
 cModel Technology
 Z0 dC:\modeltech_10.1a\examples
 T_opt
-Z1 V[RM76]nf`WhdT]PVCeRa43
+Z1 V;49CR_a6Nj2YYH1nWAH:S2
 Z2 04 3 4 work CPU fast 0
-Z3 =1-b870f4af7f25-51b06be5-1f2-1510
+Z3 =1-b870f4af7f25-51b086cf-106-83c
 Z4 o-quiet -auto_acc_if_foreign -work work
 Z5 n@_opt
 Z6 OE;O;10.1a;51
@@ -34,79 +34,79 @@ Z19 o-work work -L mtiAvm -L mtiOvm -L mtiUvm -L mtiUPF
 !i10b 1
 Z20 !s100 DzMgMCU9Eg35i<5?g3HRI3
 !s85 0
-Z21 !s108 1370516598.267000
+Z21 !s108 1370523481.605000
 Z22 !s107 define.v|E:/gardenia/bourgeois/clock.v|
 Z23 !s90 -reportprogress|300|-work|work|-vopt|E:/gardenia/bourgeois/clock.v|
 vCPU
-Z24 IkkI4ACQzb@K_[168bQ7JX3
-Z25 VAkUP^]5QD=5CjohR<0>JG0
+Z24 !s100 LLc5m5fN2LN?F1hChHd`<0
+Z25 ILR>k`2][=:4e>7]>;bkF[0
+Z26 VAkUP^]5QD=5CjohR<0>JG0
 R14
-Z26 w1370516591
-Z27 8E:/gardenia/bourgeois/CPU.v
-Z28 FE:/gardenia/bourgeois/CPU.v
+Z27 w1370523244
+Z28 8E:/gardenia/bourgeois/CPU.v
+Z29 FE:/gardenia/bourgeois/CPU.v
 L0 5
 R18
 r1
 31
-Z29 !s108 1370516597.393000
-Z30 !s107 clock.v|instmem.v|define.v|E:/gardenia/bourgeois/CPU.v|
-Z31 !s90 -reportprogress|300|-work|work|-vopt|E:/gardenia/bourgeois/CPU.v|
+Z30 !s108 1370523480.769000
+Z31 !s107 clock.v|instmem.v|define.v|E:/gardenia/bourgeois/CPU.v|
+Z32 !s90 -reportprogress|300|-work|work|-vopt|E:/gardenia/bourgeois/CPU.v|
 R19
-Z32 n@c@p@u
-Z33 !s100 3^Nil9^d3Uc[Uf2MaQUi31
+Z33 n@c@p@u
 !i10b 1
 !s85 0
 vdatamem
 !i10b 1
-Z34 !s100 @kSimK^ZclMV`UZL@[RQ_1
-Z35 I9[z5K>_ZJZ@ZRX[@5iEPK3
-Z36 Vo?ACP>]::1^XcJ^=YHRnB2
+!s100 A2?5>88R13SK3A:`[0<JN2
+Im_C?2151hPXdajl:;MA301
+VBIJ?0zQ]6n>mQcd3NnY1Z3
 R14
-Z37 w1370516527
-Z38 8E:/gardenia/bourgeois/datamem.v
-Z39 FE:/gardenia/bourgeois/datamem.v
+w1370523467
+Z34 8E:/gardenia/bourgeois/datamem.v
+Z35 FE:/gardenia/bourgeois/datamem.v
 L0 3
 R18
 r1
 !s85 0
 31
-!s108 1370516598.547000
+!s108 1370523481.871000
 !s107 define.v|E:/gardenia/bourgeois/datamem.v|
-Z40 !s90 -reportprogress|300|-work|work|-vopt|E:/gardenia/bourgeois/datamem.v|
+Z36 !s90 -reportprogress|300|-work|work|-vopt|E:/gardenia/bourgeois/datamem.v|
 R19
 vinstmem
-Z41 IHgK4eRJfF2Y[S^acP;0m63
-Z42 V@542R;_V:ZM[>SJF?5W[h1
+Z37 IJYI2=4DVkzT`PA0XRnXcb1
+Z38 VNCZFk9[F:[2E=A?1WXLU@1
 R14
-Z43 w1370516486
-Z44 8E:/gardenia/bourgeois/instmem.v
-Z45 FE:/gardenia/bourgeois/instmem.v
+Z39 w1370523477
+Z40 8E:/gardenia/bourgeois/instmem.v
+Z41 FE:/gardenia/bourgeois/instmem.v
 L0 3
 R18
 r1
 31
 R19
-Z46 !s100 V_C;o>L4NN^K4V7<Z;A?L2
-Z47 !s108 1370516597.955000
-Z48 !s107 define.v|E:/gardenia/bourgeois/instmem.v|
-Z49 !s90 -reportprogress|300|-work|work|-vopt|E:/gardenia/bourgeois/instmem.v|
+Z42 !s100 GmO<_>L9;Le2gXOJ4E^M53
+Z43 !s108 1370523481.294000
+Z44 !s107 define.v|E:/gardenia/bourgeois/instmem.v|
+Z45 !s90 -reportprogress|300|-work|work|-vopt|E:/gardenia/bourgeois/instmem.v|
 !i10b 1
 !s85 0
 vtestbench
-Z50 I6z]IAbPH]SC9T6PfhzCX31
-Z51 VhGfW:390DM[oDMzegDH9`2
+Z46 I6z]IAbPH]SC9T6PfhzCX31
+Z47 VhGfW:390DM[oDMzegDH9`2
 R14
-Z52 w1370492172
-Z53 8E:/gardenia/bourgeois/testbench.v
-Z54 FE:/gardenia/bourgeois/testbench.v
+Z48 w1370492172
+Z49 8E:/gardenia/bourgeois/testbench.v
+Z50 FE:/gardenia/bourgeois/testbench.v
 L0 5
 R18
 r1
 31
 R19
-Z55 !s108 1370493213.803000
-Z56 !s107 clock.v|instmem.v|define.v|CPU.v|E:/gardenia/bourgeois/testbench.v|
-Z57 !s90 -reportprogress|300|-work|work|-vopt|E:/gardenia/bourgeois/testbench.v|
-Z58 !s100 UFbF>=@86EOFVADkZXSSY0
+Z51 !s108 1370493213.803000
+Z52 !s107 clock.v|instmem.v|define.v|CPU.v|E:/gardenia/bourgeois/testbench.v|
+Z53 !s90 -reportprogress|300|-work|work|-vopt|E:/gardenia/bourgeois/testbench.v|
+Z54 !s100 UFbF>=@86EOFVADkZXSSY0
 !i10b 1
 !s85 0
