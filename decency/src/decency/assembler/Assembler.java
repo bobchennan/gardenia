@@ -51,7 +51,11 @@ public class Assembler {
 	}
 
 	void emit(String s) {
-		binCode.add(Util.widen(s, 32));
+		String x = Util.widen(s, 32);
+		binCode.add(x.substring(0, 7));
+		binCode.add(x.substring(8, 15));
+		binCode.add(x.substring(16, 23));
+		binCode.add(x.substring(24, 31));
 	}
 
 	void gen(ADD ai) {
