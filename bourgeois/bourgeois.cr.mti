@@ -1,21 +1,12 @@
 E:/gardenia/bourgeois/define.v {1 {vlog -work work -vopt E:/gardenia/bourgeois/define.v
 Model Technology ModelSim SE vlog 10.1a Compiler 2012.02 Feb 22 2012
 
-} {} {}} E:/gardenia/bourgeois/clock.v {1 {vlog -work work -vopt E:/gardenia/bourgeois/clock.v
+} {} {}} E:/gardenia/bourgeois/datamem.v {1 {vlog -work work -vopt E:/gardenia/bourgeois/datamem.v
 Model Technology ModelSim SE vlog 10.1a Compiler 2012.02 Feb 22 2012
--- Compiling module clock
+-- Compiling module datamem
 
 Top level modules:
-	clock
-
-} {} {}} E:/gardenia/bourgeois/CPU.v {1 {vlog -work work -vopt E:/gardenia/bourgeois/CPU.v
-Model Technology ModelSim SE vlog 10.1a Compiler 2012.02 Feb 22 2012
--- Compiling module instmem
--- Compiling module clock
--- Compiling module CPU
-
-Top level modules:
-	CPU
+	datamem
 
 } {} {}} E:/gardenia/bourgeois/instmem.v {1 {vlog -work work -vopt E:/gardenia/bourgeois/instmem.v
 Model Technology ModelSim SE vlog 10.1a Compiler 2012.02 Feb 22 2012
@@ -23,12 +14,5 @@ Model Technology ModelSim SE vlog 10.1a Compiler 2012.02 Feb 22 2012
 
 Top level modules:
 	instmem
-
-} {} {}} E:/gardenia/bourgeois/datamem.v {1 {vlog -work work -vopt E:/gardenia/bourgeois/datamem.v
-Model Technology ModelSim SE vlog 10.1a Compiler 2012.02 Feb 22 2012
--- Compiling module datamem
-
-Top level modules:
-	datamem
 
 } {} {}}

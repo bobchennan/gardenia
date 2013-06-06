@@ -4,12 +4,13 @@ K3
 cModel Technology
 Z0 dC:\modeltech_10.1a\examples
 T_opt
-V[RM76]nf`WhdT]PVCeRa43
+Vd55]5P29Y`48Nef4WB6h<0
 04 3 4 work CPU fast 0
-=1-b870f4af7f25-51b06be5-1f2-1510
+=1-b870f4af7f25-51b06860-2f1-b74
 Z1 o-quiet -auto_acc_if_foreign -work work
 n@_opt
 Z2 OE;O;10.1a;51
+Z3 dC:\modeltech_10.1a\examples
 T_opt1
 VT:kVHmV>5[XLPLl@4MQD92
 04 5 4 work clock fast 0
@@ -17,12 +18,11 @@ VT:kVHmV>5[XLPLl@4MQD92
 R1
 n@_opt1
 R2
-Z3 dC:\modeltech_10.1a\examples
 vclock
-IgG4K``RRn3feY1YJG1@D?1
+IZ0nezmnA8o7gDaSfEd?eN1
 VadSo5hlY5lQ]=HLZgdk143
 Z4 dE:\gardenia\bourgeois
-w1370515700
+w1370515611
 8E:/gardenia/bourgeois/clock.v
 FE:/gardenia/bourgeois/clock.v
 L0 3
@@ -30,13 +30,14 @@ Z5 OE;L;10.1a;51
 r1
 31
 Z6 o-work work -L mtiAvm -L mtiOvm -L mtiUvm -L mtiUPF
-!s100 A1hoA]_GV8@O2m:<6BFY12
-!s108 1370516448.662000
+!s100 M=6nE_Z@jG=n1<:XH;EYP2
+!s108 1370515614.763000
 !s107 define.v|E:/gardenia/bourgeois/clock.v|
 !s90 -reportprogress|300|-work|work|-vopt|E:/gardenia/bourgeois/clock.v|
 !i10b 1
 !s85 0
 vCPU
+!s100 I^I`KeoG608QPf82JKd>B2
 Ifed`dfW2dRhjAD1`IH4b80
 VAkUP^]5QD=5CjohR<0>JG0
 R4
@@ -47,15 +48,15 @@ L0 5
 R5
 r1
 31
-R6
-n@c@p@u
-!s100 I^I`KeoG608QPf82JKd>B2
-!s108 1370516447.524000
+!s108 1370515613.983000
 !s107 clock.v|instmem.v|define.v|E:/gardenia/bourgeois/CPU.v|
 !s90 -reportprogress|300|-work|work|-vopt|E:/gardenia/bourgeois/CPU.v|
+R6
+n@c@p@u
 !i10b 1
 !s85 0
 vdatamem
+!s100 92Rc:bZ9ZM^mnFh3K1eDA0
 IjElbeil6gTYP`;kP^``jk1
 Vo?ACP>]::1^XcJ^=YHRnB2
 R4
@@ -66,18 +67,17 @@ L0 3
 R5
 r1
 31
-R6
-!s100 92Rc:bZ9ZM^mnFh3K1eDA0
 !s90 -reportprogress|300|-work|work|-vopt|E:/gardenia/bourgeois/datamem.v|
+R6
 !i10b 1
 !s85 0
-!s108 1370516448.928000
+!s108 1370515615.028000
 !s107 define.v|E:/gardenia/bourgeois/datamem.v|
 vinstmem
-IaEN]9[:l3ZFa:TdG<GdjP2
+I6HG:D>_biF=Wz4@]aBgK?0
 V@542R;_V:ZM[>SJF?5W[h1
 R4
-w1370516388
+w1370515530
 8E:/gardenia/bourgeois/instmem.v
 FE:/gardenia/bourgeois/instmem.v
 L0 3
@@ -85,8 +85,8 @@ R5
 r1
 31
 R6
-!s100 YDS8gZj9?8PlgKh_GXPo52
-!s108 1370516448.366000
+!s100 <Z02GJ27;nVgAgi5bF^3D3
+!s108 1370515614.420000
 !s107 define.v|E:/gardenia/bourgeois/instmem.v|
 !s90 -reportprogress|300|-work|work|-vopt|E:/gardenia/bourgeois/instmem.v|
 !i10b 1
