@@ -52,10 +52,10 @@ public class Assembler {
 
 	void emit(String s) {
 		String x = Util.widen(s, 32);
-		binCode.add(x.substring(0, 7));
-		binCode.add(x.substring(8, 15));
-		binCode.add(x.substring(16, 23));
-		binCode.add(x.substring(24, 31));
+		binCode.add(x.substring(0, 8));
+		binCode.add(x.substring(8, 16));
+		binCode.add(x.substring(16, 24));
+		binCode.add(x.substring(24, 32));
 	}
 
 	void gen(ADD ai) {
