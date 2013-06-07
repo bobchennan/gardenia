@@ -17,10 +17,18 @@ Model Technology ModelSim SE vlog 10.1a Compiler 2012.02 Feb 22 2012
 Top level modules:
 	clock
 
-} {} {}} E:/gardenia/bourgeois/datamem.v {0 {vlog -work work -vopt E:/gardenia/bourgeois/datamem.v
+} {} {}} E:/gardenia/bourgeois/instmem.v {1 {vlog -work work -vopt E:/gardenia/bourgeois/instmem.v
+Model Technology ModelSim SE vlog 10.1a Compiler 2012.02 Feb 22 2012
+-- Compiling module instmem
+
+Top level modules:
+	instmem
+
+} {} {}} E:/gardenia/bourgeois/datamem.v {1 {vlog -work work -vopt E:/gardenia/bourgeois/datamem.v
 Model Technology ModelSim SE vlog 10.1a Compiler 2012.02 Feb 22 2012
 -- Compiling module datamem
-** Error: E:/gardenia/bourgeois/datamem.v(30): (vlog-2730) Undefined variable: 'inst'.
 
+Top level modules:
+	datamem
 
-} {4.0 5.0} {}}
+} {} {}}

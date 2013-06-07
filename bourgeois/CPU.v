@@ -8,7 +8,8 @@ module CPU();
   
   wire clkout;
   clock clk(.out(clkout));
-  instmem inst(.clk(clkout), .in(in), .writable(1), .write(1024'b11110), .out1(out1), .out2(out2));
+
+  reservation rs(); // TO DO
   
   initial fork
     in = 8'b00000000;
