@@ -44,13 +44,13 @@ module instcache(clk, in, hit, out);
 			Val[index] = write;
 			Valid[index] = 1'b1;
 		end else begin*/
+		  $display("cache tag1 %b tag2 %b", Tag[index], tag);
 		  if(hit == 0)begin
 		    Val[index] = out1;
         Tag[index] = tag;
         Valid[index] = 1;
       end
-      $display("return %b %b", out1, Val[index]);
-	    out=Val[index]>>offset;
+	    out=Val[index]>>(`BLOCK_SIZE-`WORD_SIZE);
 	/*end
 	end*/
   end
