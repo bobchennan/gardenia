@@ -42,8 +42,7 @@ module instcache(clk, in, hit, out);
         Tag[index] = tag;
         //Valid[index] = 0;
       end
-	    out=Val[index]>>offset;
-	    out=out[31:0];
+	    out={Val[index]>>offset}[31:0];
 	/*end
 	end*/
   end
