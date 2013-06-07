@@ -12,6 +12,7 @@ module CPU();
   clock clk(.out(clkout));
   //instmem instm(.clk(clkout), .in(in), .readable(1), .writable(1), .write(1024'b11110), .out1(out1), .out2(out2));
   instcache instc(.clk(clkout), .in(in), .out(out));
+
   
   initial fork
     in = 8'b00000000;
