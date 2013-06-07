@@ -2,7 +2,7 @@
 
 module datamem(clk, in, writable, write, out1, out2);
   input clk; 
-  input[`BYTE_SIZE-1:0] in;
+  input[`WORD_SIZE-1:0] in;
   input writable;
   input[`BLOCK_SIZE-1:0] write;
   output out1, out2;

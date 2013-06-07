@@ -8,4 +8,5 @@
 `define CACHE_GROUP 3 
 `define CACHE_OFFSET_LEN 5
 `define CACHE_INDEX_LEN 2
-`define CACHE_TAG_LEN 1
+`define CACHE_TAG_LEN 25
+`define MULTIPLE_ISSUE 26

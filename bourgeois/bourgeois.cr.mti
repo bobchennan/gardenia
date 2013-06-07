@@ -1,9 +1,42 @@
-E:/gardenia/bourgeois/define.v {1 {vlog -work work -vopt E:/gardenia/bourgeois/define.v
-Model Technology ModelSim SE vlog 10.1a Compiler 2012.02 Feb 22 2012
-
-} {} {}} E:/gardenia/bourgeois/CPU.v {1 {vlog -work work -vopt E:/gardenia/bourgeois/CPU.v
-Model Technology ModelSim SE vlog 10.1a Compiler 2012.02 Feb 22 2012
+E:/gardenia/bourgeois/instcache.v {2 {vlog -work work -vopt E:/gardenia/bourgeois/instcache.v
+Model Technology ModelSim SE vlog 10.1c Compiler 2012.07 Jul 27 2012
 -- Compiling module instmem
+-- Compiling module instcache
+** Warning: E:/gardenia/bourgeois/instcache.v(32): (vlog-2576) [BSOB] - Bit-select into 'Valid' is out of bounds.
+
+
+Top level modules:
+	instcache
+
+} {} {}} E:/gardenia/bourgeois/fetch.v {0 {vlog -work work -vopt E:/gardenia/bourgeois/fetch.v
+Model Technology ModelSim SE vlog 10.1c Compiler 2012.07 Jul 27 2012
+-- Compiling module instmem
+-- Compiling module instcache
+** Warning: instcache.v(32): (vlog-2576) [BSOB] - Bit-select into 'Valid' is out of bounds.
+
+-- Compiling module fetch
+** Error: E:/gardenia/bourgeois/fetch.v(7): Port mode is incompatible with declaration: pc
+** Error: E:/gardenia/bourgeois/fetch.v(9): 'Port' must not be declared to be an array: instr.
+
+} {8.0 10.0} {}} E:/gardenia/bourgeois/reg.v {1 {vlog -work work -vopt E:/gardenia/bourgeois/reg.v
+Model Technology ModelSim SE vlog 10.1c Compiler 2012.07 Jul 27 2012
+-- Compiling module Regfile
+
+Top level modules:
+	Regfile
+
+} {} {}} E:/gardenia/bourgeois/define.v {1 {vlog -work work -vopt E:/gardenia/bourgeois/define.v
+Model Technology ModelSim SE vlog 10.1c Compiler 2012.07 Jul 27 2012
+
+} {} {}} E:/gardenia/bourgeois/CPU.v {2 {vlog -work work -vopt E:/gardenia/bourgeois/CPU.v
+Model Technology ModelSim SE vlog 10.1c Compiler 2012.07 Jul 27 2012
+-- Compiling module instmem
+** Warning: instmem.v(3): (vlog-2275) 'instmem' already exists and will be overwritten.
+
+-- Compiling module instmem
+-- Compiling module instcache
+** Warning: instcache.v(32): (vlog-2576) [BSOB] - Bit-select into 'Valid' is out of bounds.
+
 -- Compiling module clock
 -- Compiling module CPU
 
@@ -11,16 +44,24 @@ Top level modules:
 	CPU
 
 } {} {}} E:/gardenia/bourgeois/clock.v {1 {vlog -work work -vopt E:/gardenia/bourgeois/clock.v
-Model Technology ModelSim SE vlog 10.1a Compiler 2012.02 Feb 22 2012
+Model Technology ModelSim SE vlog 10.1c Compiler 2012.07 Jul 27 2012
 -- Compiling module clock
 
 Top level modules:
 	clock
 
-} {} {}} E:/gardenia/bourgeois/datamem.v {0 {vlog -work work -vopt E:/gardenia/bourgeois/datamem.v
-Model Technology ModelSim SE vlog 10.1a Compiler 2012.02 Feb 22 2012
+} {} {}} E:/gardenia/bourgeois/datamem.v {1 {vlog -work work -vopt E:/gardenia/bourgeois/datamem.v
+Model Technology ModelSim SE vlog 10.1c Compiler 2012.07 Jul 27 2012
 -- Compiling module datamem
-** Error: E:/gardenia/bourgeois/datamem.v(30): (vlog-2730) Undefined variable: 'inst'.
 
+Top level modules:
+	datamem
 
-} {4.0 5.0} {}}
+} {} {}} E:/gardenia/bourgeois/instmem.v {1 {vlog -work work -vopt E:/gardenia/bourgeois/instmem.v
+Model Technology ModelSim SE vlog 10.1c Compiler 2012.07 Jul 27 2012
+-- Compiling module instmem
+
+Top level modules:
+	instmem
+
+} {} {}}
