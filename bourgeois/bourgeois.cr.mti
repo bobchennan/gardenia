@@ -8,17 +8,18 @@ Model Technology ModelSim SE vlog 10.1a Compiler 2012.02 Feb 22 2012
 ** Error: E:/gardenia/bourgeois/fetch.v(7): Port mode is incompatible with declaration: pc
 ** Error: E:/gardenia/bourgeois/fetch.v(9): 'Port' must not be declared to be an array: instr.
 
-} {8.0 10.0} {}} E:/gardenia/bourgeois/instcache.v {2 {vlog -work work -vopt E:/gardenia/bourgeois/instcache.v
+} {8.0 10.0} {}} E:/gardenia/bourgeois/instcache.v {0 {vlog -work work -vopt E:/gardenia/bourgeois/instcache.v
 Model Technology ModelSim SE vlog 10.1a Compiler 2012.02 Feb 22 2012
 -- Compiling module instmem
 -- Compiling module instcache
 ** Warning: E:/gardenia/bourgeois/instcache.v(32): (vlog-2576) [BSOB] - Bit-select into 'Valid' is out of bounds.
 
+** Error: (vlog-1935) Unable to move temporary file E:\gardenia\bourgeois\work/_temp/vlogzehd1z to E:\gardenia\bourgeois\work/instcache/_primary.dat.
 
-Top level modules:
-	instcache
+No such file or directory. (errno = ENOENT)
+** Error: E:/gardenia/bourgeois/instcache.v(57): Verilog Compiler exiting
 
-} {} {}} E:/gardenia/bourgeois/reg.v {1 {vlog -work work -vopt E:/gardenia/bourgeois/reg.v
+} {7.0 8.0 10.0 11.0} {}} E:/gardenia/bourgeois/reg.v {1 {vlog -work work -vopt E:/gardenia/bourgeois/reg.v
 Model Technology ModelSim SE vlog 10.1a Compiler 2012.02 Feb 22 2012
 -- Compiling module Regfile
 
@@ -60,6 +61,13 @@ Model Technology ModelSim SE vlog 10.1a Compiler 2012.02 Feb 22 2012
 
 Top level modules:
 	clock
+
+} {} {}} E:/gardenia/bourgeois/instmem.v {1 {vlog -work work -vopt E:/gardenia/bourgeois/instmem.v
+Model Technology ModelSim SE vlog 10.1a Compiler 2012.02 Feb 22 2012
+-- Compiling module instmem
+
+Top level modules:
+	instmem
 
 } {} {}} E:/gardenia/bourgeois/datamem.v {1 {vlog -work work -vopt E:/gardenia/bourgeois/datamem.v
 Model Technology ModelSim SE vlog 10.1a Compiler 2012.02 Feb 22 2012
