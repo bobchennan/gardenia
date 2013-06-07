@@ -19,15 +19,16 @@ module instmem(clk, in, readable, writable, write, out1, out2);
   always @(posedge clk) begin
     if(writable==1)begin
         for (i = 0; i < `BLOCK_SIZE / `BYTE_SIZE; i = i + 1) 
-          inst[in + i] = (write >> (`BLOCK_SIZE - `BYTE_SIZE * (i+1))) & 8'b11111111;
+          inst[(in >> 7 << 7) + i] = (write >> (`BLOCK_SIZE - `BYTE_SIZE * (i+1))) & 8'b11111111;
     end
     if (readable == 1) begin
       out1 = 0;
-      for (i = 0; i < `BLOCK_SIZE / `BYTE_SIZE; i = i + 1) 
-        out1 = (out1 << `BYTE_SIZE) + inst[in + i];
+      for (i = 0; i < `BLOCK_SIZE / `BYTE_SIZE; i = i + 1) begin
+        out1 = (out1 << `BYTE_SIZE) + inst[(in >> 7 << 7) + i];
+      end
       out2 = 0;
       for (i = 0; i < `BLOCK_SIZE / `BYTE_SIZE; i = i + 1)
-        out2 = (out2 << `BYTE_SIZE) + inst[in + `BLOCK_SIZE / `BYTE_SIZE + i];
+        out2 = (out2 << `BYTE_SIZE) + inst[(in >> 7 << 7) + `BLOCK_SIZE / `BYTE_SIZE + i];
       end
   end
 endmodule

@@ -11,6 +11,7 @@ module CPU();
   wire clkout;
   clock clk(.out(clkout));
   instmem instm(.clk(clkout), .in(in), .readable(1), .writable(0), .write(1024'b11110), .out1(out1), .out2(out2));
+<<<<<<< HEAD
   instcache instc(.clk(clkout), .in(in), .out(out));
 
   
