@@ -12,7 +12,7 @@ module datamem(clk, in, readable, writable, write, out1, out2);
   reg[`WORD_SIZE-1:0] i;
     
   initial fork
-    $readmemh("ram_data.txt", data);
+    $readmemb("ram_data.txt", data);
   join
   
   always @(posedge clk) begin

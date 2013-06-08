@@ -1,19 +1,20 @@
 E:/gardenia/bourgeois/reg.v {1 {vlog -work work -vopt E:/gardenia/bourgeois/reg.v
-Model Technology ModelSim SE vlog 10.1c Compiler 2012.07 Jul 27 2012
+Model Technology ModelSim SE vlog 10.1a Compiler 2012.02 Feb 22 2012
 -- Compiling module Regfile
 
 Top level modules:
 	Regfile
 
-} {} {}} E:/gardenia/bourgeois/fetch.v {0 {vlog -work work -vopt E:/gardenia/bourgeois/fetch.v
-Model Technology ModelSim SE vlog 10.1c Compiler 2012.07 Jul 27 2012
+} {} {}} E:/gardenia/bourgeois/instcache.v {1 {vlog -work work -vopt E:/gardenia/bourgeois/instcache.v
+Model Technology ModelSim SE vlog 10.1a Compiler 2012.02 Feb 22 2012
 -- Compiling module instmem
 -- Compiling module instcache
--- Compiling module fetch
-** Error: E:/gardenia/bourgeois/fetch.v(8): 'Port' must not be declared to be an array: instr.
 
-} {6.0 7.0} {}} E:/gardenia/bourgeois/ALU.v {1 {vlog -work work -vopt E:/gardenia/bourgeois/ALU.v
-Model Technology ModelSim SE vlog 10.1c Compiler 2012.07 Jul 27 2012
+Top level modules:
+	instcache
+
+} {} {}} E:/gardenia/bourgeois/ALU.v {1 {vlog -work work -vopt E:/gardenia/bourgeois/ALU.v
+Model Technology ModelSim SE vlog 10.1a Compiler 2012.02 Feb 22 2012
 -- Compiling module ADD
 -- Compiling module MUL
 
@@ -21,16 +22,18 @@ Top level modules:
 	ADD
 	MUL
 
-} {} {}} E:/gardenia/bourgeois/instcache.v {1 {vlog -work work -vopt E:/gardenia/bourgeois/instcache.v
-Model Technology ModelSim SE vlog 10.1c Compiler 2012.07 Jul 27 2012
+} {} {}} E:/gardenia/bourgeois/fetch.v {0 {vlog -work work -vopt E:/gardenia/bourgeois/fetch.v
+Model Technology ModelSim SE vlog 10.1a Compiler 2012.02 Feb 22 2012
 -- Compiling module instmem
 -- Compiling module instcache
+-- Compiling module fetch
+** Error: E:/gardenia/bourgeois/fetch.v(8): 'Port' must not be declared to be an array: instr.
 
-Top level modules:
-	instcache
+} {6.0 7.0} {}} E:/gardenia/bourgeois/define.v {1 {vlog -work work -vopt E:/gardenia/bourgeois/define.v
+Model Technology ModelSim SE vlog 10.1a Compiler 2012.02 Feb 22 2012
 
 } {} {}} E:/gardenia/bourgeois/RRS.v {0 {vlog -work work -vopt E:/gardenia/bourgeois/RRS.v
-Model Technology ModelSim SE vlog 10.1c Compiler 2012.07 Jul 27 2012
+Model Technology ModelSim SE vlog 10.1a Compiler 2012.02 Feb 22 2012
 -- Compiling module RRS
 ** Error: E:/gardenia/bourgeois/RRS.v(6): (vlog-2163) Macro `UNIT_SIZE is undefined.
 
@@ -39,11 +42,8 @@ Model Technology ModelSim SE vlog 10.1c Compiler 2012.07 Jul 27 2012
 ** Error: E:/gardenia/bourgeois/RRS.v(9): (vlog-2163) Macro `UNIT_SIZE is undefined.
 
 
-} {4.0 5.0 6.0 7.0 8.0 9.0} {}} E:/gardenia/bourgeois/define.v {1 {vlog -work work -vopt E:/gardenia/bourgeois/define.v
-Model Technology ModelSim SE vlog 10.1c Compiler 2012.07 Jul 27 2012
-
-} {} {}} E:/gardenia/bourgeois/CPU.v {2 {vlog -work work -vopt E:/gardenia/bourgeois/CPU.v
-Model Technology ModelSim SE vlog 10.1c Compiler 2012.07 Jul 27 2012
+} {4.0 5.0 6.0 7.0 8.0 9.0} {}} E:/gardenia/bourgeois/CPU.v {2 {vlog -work work -vopt E:/gardenia/bourgeois/CPU.v
+Model Technology ModelSim SE vlog 10.1a Compiler 2012.02 Feb 22 2012
 -- Compiling module instmem
 ** Warning: instmem.v(3): (vlog-2275) 'instmem' already exists and will be overwritten.
 
@@ -56,24 +56,17 @@ Top level modules:
 	CPU
 
 } {} {}} E:/gardenia/bourgeois/clock.v {1 {vlog -work work -vopt E:/gardenia/bourgeois/clock.v
-Model Technology ModelSim SE vlog 10.1c Compiler 2012.07 Jul 27 2012
+Model Technology ModelSim SE vlog 10.1a Compiler 2012.02 Feb 22 2012
 -- Compiling module clock
 
 Top level modules:
 	clock
 
 } {} {}} E:/gardenia/bourgeois/instmem.v {1 {vlog -work work -vopt E:/gardenia/bourgeois/instmem.v
-Model Technology ModelSim SE vlog 10.1c Compiler 2012.07 Jul 27 2012
+Model Technology ModelSim SE vlog 10.1a Compiler 2012.02 Feb 22 2012
 -- Compiling module instmem
 
 Top level modules:
 	instmem
-
-} {} {}} E:/gardenia/bourgeois/datamem.v {1 {vlog -work work -vopt E:/gardenia/bourgeois/datamem.v
-Model Technology ModelSim SE vlog 10.1c Compiler 2012.07 Jul 27 2012
--- Compiling module datamem
-
-Top level modules:
-	datamem
 
 } {} {}}
