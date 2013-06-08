@@ -3,28 +3,34 @@
 
 module fetch(clk, pc, newpc);
   input clk;
-  input[`BYTE_SIZE-1:0] pc;
-  output[`BYTE_SIZE-1:0] newpc;
-  reg[`WORD_SIZE-1:0] out[`MULTIPLE_ISSUE-1:0];
+  input[`WORD_SIZE-1:0] pc;
+  output[`WORD_SIZE-1:0] newpc;
+  wire[`BLOCK_SIZE-1:0] out;
+  reg finish;
+  integer idx;
+  reg[`WORD_SIZE-1:0] inst;
   
-  generate
-    genvar i;
-    begin:loop
-      for(i=0;i<`MULTIPLE_ISSUE;i=i+1)
-      begin
-        instcache inst(.clk(clk), .in(pc+`WORD_SIZE*i), .out(out[i]));
-        if(out[i]==32'b00000000000000000000000000000000)
-          disable loop;
-        else begin
-          assign cnt=cnt+1;
+  instcache ins(.clk(clk), .in(pc), .out(out));
+  
+  initial begin
+    finish = 1;
+    idx = 992;
+    $display("idx %b", idx);
+  end
+  
+  always @(posedge clk)begin
+    if(finish)begin
+      finish = 0;
+      begin:loop
+        while(1)begin
+          inst = out >> idx;
+          idx = idx - `WORD_SIZE;
+          $display("%b %b", idx, inst);
+          
+          if(idx<0)disable loop;
         end
       end
     end
-    
-  endgenerate
-  
-  always @(posedge clk)begin
-    
   end
   
 endmodule

@@ -10,3 +10,4 @@
 `define CACHE_INDEX_LEN 2
 `define CACHE_TAG_LEN 25
 `define MULTIPLE_ISSUE 26
+`define UNIT_SIZE 8

@@ -12,8 +12,8 @@ module datamem(clk, in, readable, writable, write, out1, out2);
   reg[`WORD_SIZE-1:0] i;
 
   initial begin
-    for(i=0;i<`INST_MEM_SIZE;i=i+1)
-      inst[i]=`BYTE_SIZE'b00000000;
+    for(i=0;i<`DATA_MEM_SIZE;i=i+1)
+      data[i]=`BYTE_SIZE'b00000000;
     $readmemh("ram_data.txt", data);
   end
   
