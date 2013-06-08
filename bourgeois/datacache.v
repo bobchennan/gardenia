@@ -7,7 +7,7 @@ module datacache(clk, in, readable, writable, write, out);
   input[`WORD_SIZE-1:0] in; // address
   input readable, writable;
   input[`WORD_SIZE-1:0] write;
-  output reg[`WORD_SIZE-1:0] out;
+  output[`WORD_SIZE-1:0] out;
 
   wire[`CACHE_OFFSET_LEN-1:0] offset;
   assign offset=in[4:0];
