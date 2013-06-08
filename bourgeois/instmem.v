@@ -23,12 +23,9 @@ module instmem(clk, in, readable, writable, write, out1, out2);
           inst[(in >> 7 << 7) + i] = (write >> (`BLOCK_SIZE - `BYTE_SIZE * (i+1))) & 8'b11111111;
     end
     if (readable == 1) begin
-      //$display("@@%b", in);
       out1 = 0;
-      for (i = 0; i < `BLOCK_SIZE / `BYTE_SIZE; i = i + 1) begin
+      for (i = 0; i < `BLOCK_SIZE / `BYTE_SIZE; i = i + 1) 
         out1 = (out1 << `BYTE_SIZE) + inst[(in >> 7 << 7) + i];
-        //$display("!!!!!%b", inst[(in >> 7 << 7) + i]);
-      end
       out2 = 0;
       for (i = 0; i < `BLOCK_SIZE / `BYTE_SIZE; i = i + 1)
         out2 = (out2 << `BYTE_SIZE) + inst[(in >> 7 << 7) + `BLOCK_SIZE / `BYTE_SIZE + i];

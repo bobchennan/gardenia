@@ -13,4 +13,3 @@ module MUL(dst, src1, src2);
   
   assign dst = src1 * src2;
 endmodule
-
