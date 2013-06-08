@@ -50,7 +50,7 @@ module instcache(clk, in, out);
         Tag[index] = tag;
         Valid[index] = 1;
       end
-	    out=Val[index]>>(`BLOCK_SIZE-(offset+1)*`WORD_SIZE);
+	    out=Val[index]>>(`BLOCK_SIZE-offset*`WORD_SIZE);
 	/*end
 	end*/
   end

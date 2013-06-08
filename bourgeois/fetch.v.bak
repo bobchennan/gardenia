@@ -3,7 +3,8 @@
 
 module fetch(clk, pc, instr, newpc);
 	input clk;
-	input[`BYTE_SIZE-1:0] pc;
+	input pc;
+	reg[`BYTE_SIZE-1:0] pc;
 	output instr;
 	reg[`WORD_SIZE-1:0] instr[`MULTIPLE_ISSUE-1:0];
 	output newpc;

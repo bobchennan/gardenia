@@ -18,6 +18,6 @@ module CPU();
     #40 in=1;
     #50 $display("%b %b",out, out1);
     #60 in=129;
-    #70 $display("%b %b",out, out1);
+    #70 $display("%b",out);
   join
 endmodule
