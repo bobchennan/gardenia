@@ -8,3 +8,9 @@
 *.vhd
 *.dbs
 *.dat
+*.bak
+/work
+*.cr.mti
+*.mpf
+_*
+*.wlf
