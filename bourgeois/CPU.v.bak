@@ -11,13 +11,12 @@ module CPU();
   wire clkout;
   clock clk(.out(clkout));
   instmem instm(.clk(clkout), .in(in), .readable(1), .writable(0), .write(1024'b11110), .out1(out1), .out2(out2));
-  instcache instc(.clk(clkout), .in(in), .out(out));
+  //instcache instc(.clk(clkout), .in(in), .out(out));
 
   
   initial fork
-    #40 in=1;
-    #50 $display("%b %b",out, out1);
-    #60 in=129;
-    #70 $display("%b %b",out, out1);
+    #10 in=129;
+    #20 $display("%b", in);
+    #300 $display("%b", out1);
   join
 endmodule

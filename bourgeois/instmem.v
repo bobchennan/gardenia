@@ -12,6 +12,8 @@ module instmem(clk, in, readable, writable, write, out1, out2);
   reg[`WORD_SIZE-1:0] i;
 
   initial begin
+    for(i=0;i<`INST_MEM_SIZE;i=i+1)
+      inst[i]=`BYTE_SIZE'b00000000;
     $readmemb("input.bin", inst);
   end
   
@@ -21,9 +23,12 @@ module instmem(clk, in, readable, writable, write, out1, out2);
           inst[(in >> 7 << 7) + i] = (write >> (`BLOCK_SIZE - `BYTE_SIZE * (i+1))) & 8'b11111111;
     end
     if (readable == 1) begin
+      //$display("@@%b", in);
       out1 = 0;
-      for (i = 0; i < `BLOCK_SIZE / `BYTE_SIZE; i = i + 1) 
+      for (i = 0; i < `BLOCK_SIZE / `BYTE_SIZE; i = i + 1) begin
         out1 = (out1 << `BYTE_SIZE) + inst[(in >> 7 << 7) + i];
+        //$display("!!!!!%b", inst[(in >> 7 << 7) + i]);
+      end
       out2 = 0;
       for (i = 0; i < `BLOCK_SIZE / `BYTE_SIZE; i = i + 1)
         out2 = (out2 << `BYTE_SIZE) + inst[(in >> 7 << 7) + `BLOCK_SIZE / `BYTE_SIZE + i];
