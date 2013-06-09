@@ -1,6 +1,7 @@
 `include "define.v"
 
-module RRS(r,writable,write,out);
+module RRS(clk, r, writable, write, out);
+  input clk;
   input[5:0] r; // 64 registers
   input writable; // write(1) or read(0)
   input[`UNIT_SIZE-1:0] write;
