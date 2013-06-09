@@ -10,7 +10,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out);
   input hasimm;
   input signed[`WORD_SIZE-1:0] imm;
   input enable;
-  output out;
+  output reg out;
   
   //unit code
   //lw : 10000000 - 11011111
@@ -24,17 +24,19 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out);
   //ALU for add
   generate for (geni = 0; geni < 32; geni = geni + 1) begin:czpadd
     wire[`GENERAL_RS_SIZE-1:0] tmp;
-	wire signed[`WORD_SIZE-1:0] out;
-	assign tmp = add[geni];
-    ADD addd(out, $signed(tmp[81:50]), $signed(tmp[49:18]));
+   	wire signed[`WORD_SIZE-1:0] addout;
+	  assign tmp = add[geni];
+    ADD addd(addout, $signed(tmp[81:50]), $signed(tmp[49:18]));
   end
+  endgenerate
   //ALU for mul
   generate for (geni = 0; geni < 32; geni = geni + 1) begin:czpmul
     wire[`GENERAL_RS_SIZE-1:0] tmp;
-	wire signed[`WORD_SIZE-1:0] out;
-	assign tmp = mul[geni];
-    MUL mull(out, $signed(tmp[81:50]), $signed(tmp[49:18]));
+	  wire signed[`WORD_SIZE-1:0] mulout;
+	  assign tmp = mul[geni];
+    MUL mull(mulout, $signed(tmp[81:50]), $signed(tmp[49:18]));
   end
+  endgenerate
   
   reg[`WORD_SIZE-1:0] cachein;
   reg readable, writable;
@@ -44,35 +46,37 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out);
   //ALU for lw
   generate for (geni = 0; geni < 32; geni = geni + 1) begin:czplw
     wire[`GENERAL_RS_SIZE-1:0] tmp;
-	wire signed[`WORD_SIZE-1:0] out;
+	  reg signed[`WORD_SIZE-1:0] lwout;
     assign tmp = lw[geni];
-	reg[`WORD_SIZE-1:0] addres; // add result
-	ADD addd(addres, $signed(tmp[81:50]), $signed(tmp[49:18]));
-	always begin // need condition
-	  if (tmp[1:1] == 1'b1 && tmp[0:0] == 1'b1) begin
-	    cachein = addres;
-	    readable = 1;
-	    out = cacheout;
-	    readable = 0;
+	  reg[`WORD_SIZE-1:0] addres; // add result
+	  ADD addd(addres, $signed(tmp[81:50]), $signed(tmp[49:18]));
+	  always begin // need condition
+	    if (tmp[1:1] == 1'b1 && tmp[0:0] == 1'b1) begin
+	      cachein = addres;
+	      readable = 1;
+	      lwout = cacheout;
+	      readable = 0;
+	    end
 	  end
-	end
   end
+  endgenerate
+  
   //ALU for sw
   generate for (geni = 0; geni < 32; geni = geni + 1) begin:czpsw
     wire[`GENERAL_RS_SIZE-1:0] tmp;
-	wire signed[`WORD_SIZE-1:0] out;
     assign tmp = lw[geni];
-	reg[`WORD_SIZE-1:0] addres;
-	ADD addd(addres, $signed(tmp[81:50]), $signed(tmp[49:18]));
-	always begin // need condition
-	  if (tmp[2:2] == 1'b1 && tmp[1:1] == 1'b1 && tmp[0:0] == 1'b1) begin
-	    write = tmp[113:82];
-	    cachein = addres;
-	    writable = 1;
-	    writable = 0;
+	  reg[`WORD_SIZE-1:0] addres;
+	  ADD addd(addres, $signed(tmp[81:50]), $signed(tmp[49:18]));
+	  always begin // need condition
+	    if (tmp[2:2] == 1'b1 && tmp[1:1] == 1'b1 && tmp[0:0] == 1'b1) begin
+	      write = tmp[113:82];
+	      cachein = addres;
+	      writable = 1;
+	      writable = 0;
+	    end
 	  end
-	end
   end
+  endgenerate
   
   //Register Result Status
   reg[5:0] rrsr; // 64 registers
@@ -80,8 +84,11 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out);
   reg[`UNIT_SIZE-1:0] rrswrite;
   reg[`UNIT_SIZE-1:0] rrsout; // which unit is using this register
   RRS rrs(clk, rrsr, rrswritable, rrswrite, rrsout);
+  initial begin
+    rrswritable = 0;
+  end
   
-  
+  reg[`UNIT_SIZE-1:0] i;
   always @(posedge clk) begin
     if (enable == 1) begin
 	  case (unit) 
@@ -95,6 +102,10 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out);
 		    lw[i] = ((2'b10 << 32 << 32 << 8) + reg2 << 8) + reg3 << 2;
 		  else
 		    lw[i] = (((2'b10 << 32 << 32) + $unsigned(imm) << 8) + reg2 << 8 << 2) + 1'b1;
+		  rrsr = reg1;
+		  rrswrite = i + 8'b10000000;
+		  rrswritable = 1;
+		  rrswritable = 0;
 		  out = 1;
 		end
 		2'b01: begin // sw
@@ -119,6 +130,10 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out);
 		    add[i] = ((2'b10 << 32 << 32 << 8) + reg2 << 8) + reg3 << 2;
 		  else
 		    add[i] = (((2'b10 << 32 << 32) + $unsigned(imm) << 8) + reg2 << 8 << 2) + 1'b1;
+		  rrsr = reg1;
+		  rrswrite = i + 8'b10100000;
+		  rrswritable = 1;
+		  rrswritable = 0;
 		  out = 1;
 		end
 		2'b11: begin // mul
@@ -131,6 +146,10 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out);
 		    mul[i] = ((2'b10 << 32 << 32 << 8) + reg2 << 8) + reg3 << 2;
 		  else
 		    mul[i] = (((2'b10 << 32 << 32) + $unsigned(imm) << 8) + reg2 << 8 << 2) + 1'b1;
+		  rrsr = reg1;
+		  rrswrite = i + 8'b11000000;
+		  rrswritable = 1;
+		  rrswritable = 0;
 		  out = 1;
 		end
 	  endcase

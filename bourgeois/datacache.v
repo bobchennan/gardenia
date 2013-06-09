@@ -7,7 +7,7 @@ module datacache(clk, in, readable, writable, write, out);
   input[`WORD_SIZE-1:0] in; // address
   input readable, writable;
   input[`WORD_SIZE-1:0] write;
-  output[`WORD_SIZE-1:0] out;
+  output reg[`WORD_SIZE-1:0] out;
 
   wire[`CACHE_OFFSET_LEN-1:0] offset;
   assign offset=in[4:0];
@@ -46,7 +46,9 @@ module datacache(clk, in, readable, writable, write, out);
 	if (writable == 1) begin
 	  if (hit == 1) begin
 	    tmp = Val[index];
-		Val[index] = (((Val[index] >> (`BLOCK_SIZE - offset * `BYTE_SIZE) << 32) + write) << (`BLOCK_SIZE - offset * `BYTE_SIZE -32)) + tmp[`BLOCK_SIZE - offset * `BYTE_SIZE - 32:0];
+		Val[index] = (((Val[index] >> (`BLOCK_SIZE - offset * `BYTE_SIZE) << 32) + write) 
+		 << (`BLOCK_SIZE - offset * `BYTE_SIZE -32))
+		 + (tmp & ((1 << (`BLOCK_SIZE - offset * `BYTE_SIZE -32)) - 1));
 		Dirty[index] = 1;
       end else begin
 	    if (Dirty[index] == 1) begin
@@ -62,7 +64,9 @@ module datacache(clk, in, readable, writable, write, out);
         Tag[index] = tag;
         Valid[index] = 1;
 		tmp = Val[index];
-		Val[index] = (((Val[index] >> (`BLOCK_SIZE - offset * `BYTE_SIZE) << 32) + write) << (`BLOCK_SIZE - offset * `BYTE_SIZE -32)) + tmp[`BLOCK_SIZE - offset * `BYTE_SIZE - 32:0];
+		Val[index] = (((Val[index] >> (`BLOCK_SIZE - offset * `BYTE_SIZE) << 32) + write) 
+		 << (`BLOCK_SIZE - offset * `BYTE_SIZE -32)) 
+		 + (tmp & ((1 << (`BLOCK_SIZE - offset * `BYTE_SIZE -32)) - 1));
 		Dirty[index] = 1;
 	  end
 	end
@@ -78,7 +82,7 @@ module datacache(clk, in, readable, writable, write, out);
 		  Dirty[index] = 0;
 		end
 		cachein = in;
-		cachereadable = 1
+		cachereadable = 1;
 		Val[index] = ou1;
 		cachereadable = 0;
         Tag[index] = tag;
