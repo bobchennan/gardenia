@@ -2,12 +2,13 @@
 `include "datamem.v"
 // write back
 // if write miss, move out dirty cache, move in new block, write back
-module datacache(clk, in, readable, writable, write, out);
+module datacache(clk, in, readable, writable, write, out, over);
   input clk;
   input[`WORD_SIZE-1:0] in; // address
   input readable, writable;
   input[`WORD_SIZE-1:0] write;
   output reg[`WORD_SIZE-1:0] out;
+  output reg over;
 
   wire[`CACHE_OFFSET_LEN-1:0] offset;
   assign offset=in[4:0];
@@ -38,10 +39,13 @@ module datacache(clk, in, readable, writable, write, out);
 	Dirty[1]=0;
 	Dirty[2]=0;
 	Dirty[3]=0;
+	over = 0;
   end
   
   reg[`BLOCK_SIZE-1:0] tmp;
-  
+  always @(negedge clk) begin
+    over = 0;
+  end
   always @(posedge clk) begin:czp
 	if (writable == 1) begin
 	  if (hit == 1) begin
@@ -90,5 +94,6 @@ module datacache(clk, in, readable, writable, write, out);
 		out = (Val[index] >> (`BLOCK_SIZE - offset * `BYTE_SIZE)) & 32'b11111111_11111111_11111111_11111111;
 	  end
 	end
+	over = 1;
   end
 endmodule
