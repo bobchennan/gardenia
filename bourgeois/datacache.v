@@ -24,9 +24,9 @@ module datacache(clk, in, readable, writable, write, out);
   wire hit;
   assign hit = Tag[index]==tag && Valid[index]; 
 
-  wire[`BLOCK_SIZE-1:0] cachewrite, ou1, ou2;
-  wire cachereadable, cachewritable;
-  wire[`WORD_SIZE-1:0] cachein;
+  reg[`BLOCK_SIZE-1:0] cachewrite, ou1, ou2;
+  reg cachereadable, cachewritable;
+  reg[`WORD_SIZE-1:0] cachein;
   instmem data(.clk(clk), .in(cachein), .readable(cachereadable), .writable(cachewritable), .write(cachewrite), .out1(ou1), .out2(ou2));
     
   initial begin
@@ -40,7 +40,7 @@ module datacache(clk, in, readable, writable, write, out);
 	Dirty[3]=0;
   end
   
-  wire[`BLOCK_SIZE-1:0] tmp;
+  reg[`BLOCK_SIZE-1:0] tmp;
   
   always @(posedge clk) begin:czp
 	if (writable == 1) begin
@@ -56,9 +56,9 @@ module datacache(clk, in, readable, writable, write, out);
 		  cachewritable = 0;
 		end
 		cachein = in;
-		readable = 1;
+		cachereadable = 1;
 		Val[index] = ou1;
-		readable = 0;
+		cachereadable = 0;
         Tag[index] = tag;
         Valid[index] = 1;
 		tmp = Val[index];
@@ -66,7 +66,7 @@ module datacache(clk, in, readable, writable, write, out);
 		Dirty[index] = 1;
 	  end
 	end
-	if (readable == 1) begin
+	if ((readable == 1) || (writable == 1)) begin
 	  if (hit == 1) begin
         out = (Val[index] >> (`BLOCK_SIZE - offset * `BYTE_SIZE)) & 32'b11111111_11111111_11111111_11111111;
       end else begin
@@ -78,9 +78,9 @@ module datacache(clk, in, readable, writable, write, out);
 		  Dirty[index] = 0;
 		end
 		cachein = in;
-		readable = 1;
+		cachereadable = 1
 		Val[index] = ou1;
-		readable = 0;
+		cachereadable = 0;
         Tag[index] = tag;
         Valid[index] = 1;
 		out = (Val[index] >> (`BLOCK_SIZE - offset * `BYTE_SIZE)) & 32'b11111111_11111111_11111111_11111111;

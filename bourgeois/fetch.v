@@ -4,21 +4,23 @@
 module fetch(clk, pc, newpc);
   input clk;
   input[`WORD_SIZE-1:0] pc;
-  output[`WORD_SIZE-1:0] newpc;
+  output reg[`WORD_SIZE-1:0] newpc;
   wire[`BLOCK_SIZE-1:0] out;
   reg finish;
   integer idx;
   reg[`WORD_SIZE-1:0] inst;
   
-  instcache ins(.clk(clk), .in(pc), .out(out));
+  instcache ins(.clk(clk), .in(newpc), .out(out));
   
   initial begin
     finish = 1;
     idx = 992;
+    newpc = pc;
     $display("idx %b", idx);
   end
   
   always @(posedge clk)begin
+    newpc = pc;
     if(finish)begin
       finish = 0;
       begin:loop
@@ -30,6 +32,9 @@ module fetch(clk, pc, newpc);
           if(idx<0)disable loop;
         end
       end
+      newpc=newpc+128;
+      finish=1;
+      idx = 992;
     end
   end
   
