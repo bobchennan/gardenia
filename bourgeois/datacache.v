@@ -36,11 +36,14 @@ module datacache(clk, in, readable, writable, write, out, over);
     Valid[1]=0;
     Valid[2]=0;
     Valid[3]=0;
-	Dirty[0]=0;
-	Dirty[1]=0;
-	Dirty[2]=0;
-	Dirty[3]=0;
-	over = 0;
+    Dirty[0]=0;
+    Dirty[1]=0;
+    Dirty[2]=0;
+    Dirty[3]=0;
+    over = 0;
+    cachereadable = 0;
+    cachewritable = 0;
+    cachewrite = 0;
   end
   
   reg[`BLOCK_SIZE-1:0] tmp;
@@ -48,53 +51,55 @@ module datacache(clk, in, readable, writable, write, out, over);
     over = 0;
   end
   always @(posedge clk) begin:czp
-	if (writable == 1) begin
-	  if (hit == 1) begin
-	    tmp = Val[index];
-		Val[index] = (((Val[index] >> (`BLOCK_SIZE - offset * `BYTE_SIZE) << 32) + write) 
-		 << (`BLOCK_SIZE - offset * `BYTE_SIZE -32))
-		 + (tmp & ((1 << (`BLOCK_SIZE - offset * `BYTE_SIZE -32)) - 1));
-		Dirty[index] = 1;
-      end else begin
-	    if (Dirty[index] == 1) begin
-		  cachein = Tag[index] << 6 + index << 4;
-		  cachewrite = Val[index];
-		  cachewritable = 1;
-		  cachewritable = 0;
-		end
-		cachein = in;
-		cachereadable = 1;
-		Val[index] = ou1;
-		cachereadable = 0;
+    $display("aa %b %b %b, %b", in, readable, out, Val[index]);
+    if (writable == 1) begin
+      if (hit == 1) begin 
+        tmp = Val[index];
+        Val[index] = (((Val[index] >> (`BLOCK_SIZE - offset * `BYTE_SIZE) << 32) + write) 
+         << (`BLOCK_SIZE - offset * `BYTE_SIZE -32))
+         + (tmp & ((1 << (`BLOCK_SIZE - offset * `BYTE_SIZE -32)) - 1));
+        Dirty[index] = 1;
+        end else begin
+          if (Dirty[index] == 1) begin
+            cachein = Tag[index] << 6 + index << 4;
+            cachewrite = Val[index];
+            cachewritable = 1;
+            cachewritable = 0;
+          end
+        cachein = in;
+        cachereadable = 1;
+        Val[index] = ou1;
+        cachereadable = 0;
         Tag[index] = tag;
         Valid[index] = 1;
-		tmp = Val[index];
-		Val[index] = (((Val[index] >> (`BLOCK_SIZE - offset * `BYTE_SIZE) << 32) + write) 
-		 << (`BLOCK_SIZE - offset * `BYTE_SIZE -32)) 
-		 + (tmp & ((1 << (`BLOCK_SIZE - offset * `BYTE_SIZE -32)) - 1));
-		Dirty[index] = 1;
-	  end
-	end
-	if ((readable == 1) || (writable == 1)) begin
-	  if (hit == 1) begin
-        out = (Val[index] >> (`BLOCK_SIZE - offset * `BYTE_SIZE)) & 32'b11111111_11111111_11111111_11111111;
+        tmp = Val[index];
+        Val[index] = (((Val[index] >> (`BLOCK_SIZE - offset * `BYTE_SIZE) << 32) + write) 
+         << (`BLOCK_SIZE - offset * `BYTE_SIZE -32)) 
+         + (tmp & ((1 << (`BLOCK_SIZE - offset * `BYTE_SIZE -32)) - 1));
+        Dirty[index] = 1;
+      end
+    end
+    if ((readable == 1) || (writable == 1)) begin
+      if (hit == 1) begin
+          out = (Val[index] >> (`BLOCK_SIZE - offset * `BYTE_SIZE - `WORD_SIZE)) & 32'b11111111_11111111_11111111_11111111;
       end else begin
-	    if (Dirty[index] == 1) begin
-		  cachein = Tag[index] << 6 + index << 4;
-		  cachewrite = Val[index];
-		  cachewritable = 1;
-		  cachewritable = 0;
-		  Dirty[index] = 0;
-		end
-		cachein = in;
-		cachereadable = 1;
-		Val[index] = ou1;
-		cachereadable = 0;
+        if (Dirty[index] == 1) begin
+          cachein = Tag[index] << 6 + index << 4;
+          cachewrite = Val[index];
+          cachewritable = 1;
+          cachewritable = 0;
+          Dirty[index] = 0;
+        end
+        cachein = in;
+        cachereadable = 1;
+        Val[index] = ou1;
+        cachereadable = 0;
         Tag[index] = tag;
         Valid[index] = 1;
-		out = (Val[index] >> (`BLOCK_SIZE - offset * `BYTE_SIZE)) & 32'b11111111_11111111_11111111_11111111;
-	  end
-	end
-	over = 1;
+        out = (Val[index] >> (`BLOCK_SIZE - offset * `BYTE_SIZE - `WORD_SIZE)) & 32'b11111111_11111111_11111111_11111111;
+        $display("## %b %b %b", index, Val[index], ou1);
+      end
+    end
+    over = 1;
   end
 endmodule
