@@ -24,7 +24,7 @@ module instcache(clk, in, out);
   assign hit = Tag[index]==tag && Valid[index]; 
 
   wire[`BLOCK_SIZE-1:0] ou1, ou2;
-  instmem inst(.clk(clk), .in(in), .readable(1'b1), .writable(1'b0), .write(1'b0), .out1(ou1), .out2(ou2));
+  instmem inst(.clk(clk), .in(in), .readable(1'b1), .writable(1'b0), .write(`BLOCK_SIZE'b0), .out1(ou1), .out2(ou2));
     
   initial begin
     Valid[0]=0;

@@ -73,8 +73,8 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out);
   reg[`WORD_SIZE-1:0] cachein;
   reg readable, writable;
   reg[`WORD_SIZE-1:0] write;
-  reg[`WORD_SIZE-1:0] cacheout;
-  reg over;
+  wire[`WORD_SIZE-1:0] cacheout;
+  wire over;
   datacache data(clk, cachein, readable, writable, write, cacheout, over);
   //ALU for lw
   generate for (geni = 0; geni < 32; geni = geni + 1) begin:czplw
@@ -158,9 +158,11 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out);
     if (enable == 1) begin
     case (unit) 
       2'b00: begin // lw
+      begin:loop
       for (i = 0; i < 96; i = i + 1) 
         if (lw[i] >> (`GENERAL_RS_SIZE - 1) == 0) 
-        break;
+          disable loop;
+      end
       if (i >= 96) 
         out = 0; // full
       else if (hasimm == 0) 
@@ -174,9 +176,11 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out);
       out = 1;
     end
     2'b01: begin // sw
+      begin:loop2
       for (i = 0; i < 32; i = i + 1) 
         if (sw[i] >> (`SW_RS_SIZE - 1) == 0) 
-        break;
+          disable loop2;
+      end
       if (i >= 32) 
         out = 0; // full
       else if (hasimm == 0) 
@@ -186,9 +190,11 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out);
       out = 1;
     end
     2'b10: begin // add
+      begin:loop3
       for (i = 0; i < 32; i = i + 1) 
         if (add[i] >> (`GENERAL_RS_SIZE - 1) == 0) 
-        break;
+          disable loop3;
+      end
       if (i >= 32) 
         out = 0; // full
       else if (hasimm == 0) 
@@ -202,9 +208,11 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out);
       out = 1;
     end
     2'b11: begin // mul
+      begin:loop4
       for (i = 0; i < 32; i = i + 1) 
         if (mul[i] >> (`GENERAL_RS_SIZE - 1) == 0) 
-        break;
+          disable loop4;
+      end
       if (i >= 32) 
         out = 0; // full
       else if (hasimm == 0) 

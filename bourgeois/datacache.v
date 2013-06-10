@@ -25,10 +25,11 @@ module datacache(clk, in, readable, writable, write, out, over);
   wire hit;
   assign hit = Tag[index]==tag && Valid[index]; 
 
-  reg[`BLOCK_SIZE-1:0] cachewrite, ou1, ou2;
+  reg[`BLOCK_SIZE-1:0] cachewrite;
+  wire[`BLOCK_SIZE-1:0] ou1, ou2;
   reg cachereadable, cachewritable;
   reg[`WORD_SIZE-1:0] cachein;
-  instmem data(.clk(clk), .in(cachein), .readable(cachereadable), .writable(cachewritable), .write(cachewrite), .out1(ou1), .out2(ou2));
+  datamem data(.clk(clk), .in(cachein), .readable(cachereadable), .writable(cachewritable), .write(cachewrite), .out1(ou1), .out2(ou2));
     
   initial begin
     Valid[0]=0;
