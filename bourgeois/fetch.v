@@ -9,8 +9,9 @@ module fetch(clk, pc, newpc);
   reg finish;
   integer idx;
   reg[`WORD_SIZE-1:0] inst;
+  wire miss;
   
-  instcache ins(.clk(clk), .in(newpc), .out(out));
+  instcache ins(.clk(clk), .in(newpc), .out(out), .miss(miss));
   
   reg[1:0] unit; // 00 - lw, 01 - sw, 10 - add, 11 - mul
   reg[`REG_SIZE-1:0] reg1, reg2, reg3;
@@ -18,7 +19,7 @@ module fetch(clk, pc, newpc);
   reg signed[`WORD_SIZE-1:0] imm;
   reg enable, out2;
   
-  RS rs(.clk(clk), .unit(unit), .reg1(reg1), .reg2(reg2), .reg3(reg3), .hasimm(hasimm), .imm(imm), .enable(enable), .out(out2));
+  //RS rs(.clk(clk), .unit(unit), .reg1(reg1), .reg2(reg2), .reg3(reg3), .hasimm(hasimm), .imm(imm), .enable(enable), .out(out2));
   
   initial begin
     finish = 1;
@@ -29,13 +30,16 @@ module fetch(clk, pc, newpc);
   end
   
   always @(posedge clk)begin
+    if(miss)
+      #`CACHE_MISS_TIME finish = finish;
     if(finish)begin
       finish = 0;
       begin:loop
         while(1)begin
           inst = out >> idx;
+          $display("%b", inst);
           case(inst>>28)
-            4'b1000: begin
+            /*4'b1000: begin
               unit = 2'b10;
               reg1 = inst[27:22];
               reg2 = inst[21:16];
@@ -118,21 +122,32 @@ module fetch(clk, pc, newpc);
             4'b1110:begin
               newpc = inst[27:0];
               idx = 992;
-            end
+            end*/
             4'b0000:begin
               //$display("%g idx %g empty", newpc, idx);
-              finish = 1;
+              idx = idx - `WORD_SIZE;
               if(idx<0)begin
                 newpc=newpc+128;
-                //$display("%g change2 %g", idx, newpc);
-                idx=992;
+                if(miss)begin
+                  #`CACHE_MISS_TIME idx = 992;
+                end
+                else
+                  idx = 992;
               end
+              finish = 1;
               disable loop;
+            end
+            default:begin
+              idx = idx - `WORD_SIZE;
             end
           endcase
           if(idx<0)begin
             newpc = newpc + 128;
-            idx = 992;
+            if(miss)begin
+              #`CACHE_MISS_TIME idx = 992;
+            end
+            else
+              idx = 992;
           end
         end
       end
