@@ -5,7 +5,7 @@
 
 module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out);
   input clk;
-  input[1:0] unit; // 00 - lw, 01 - sw, 10 - add, 11 - mul
+  input[2:0] unit; // 000 - lw, 001 - sw, 010 - add, 011 - mul, 100 - mv
   input[`REG_SIZE-1:0] reg1, reg2, reg3;
   input hasimm;
   input signed[`WORD_SIZE-1:0] imm;
@@ -17,6 +17,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out);
   //sw : 00000000 - 00011111
   //add: 00100000 - 00111111
   //mul: 01000000 - 01011111
+  //mv(register has its value) : 01111111
   reg[`GENERAL_RS_SIZE-1:0] add[0:32-1], mul[0:32-1], lw[0:96-1];
   reg[`SW_RS_SIZE-1:0] sw[0:32-1];
   reg[`UNIT_SIZE + `WORD_SIZE - 1:0] cdb;
@@ -74,8 +75,8 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out);
   reg readable, writable;
   reg[`WORD_SIZE-1:0] write;
   wire[`WORD_SIZE-1:0] cacheout;
-  wire over;
-  datacache data(clk, cachein, readable, writable, write, cacheout, over);
+  wire miss;
+  datacache data(clk, cachein, readable, writable, write, cacheout, miss);
   //ALU for lw
   generate for (geni = 0; geni < 32; geni = geni + 1) begin:czplw
     wire[`GENERAL_RS_SIZE-1:0] tmp;
@@ -147,8 +148,10 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out);
   reg[5:0] rrsr; // 64 registers
   reg rrswritable; // write(1) or read(0)
   reg[`UNIT_SIZE-1:0] rrswrite;
-  reg[`UNIT_SIZE-1:0] rrsout; // which unit is using this register
-  RRS rrs(clk, rrsr, rrswritable, rrswrite, rrsout);
+  reg signed[`WORD_SIZE-1:0] rrsinrf;
+  wire[`UNIT_SIZE-1:0] rrsout; // which unit is using this register
+  wire signed[`WORD_SIZE-1:0] rrsoutrf;
+  RRS rrs(clk, rrsr, rrswritable, rrswrite, rrsinrf, rrsout, rrsoutrf);
   initial begin
     rrswritable = 0;
   end
@@ -157,25 +160,27 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out);
   always @(posedge clk) begin
     if (enable == 1) begin
     case (unit) 
-      2'b00: begin // lw
-      begin:loop
+      3'b000: begin // lw
+      begin:loop1
       for (i = 0; i < 96; i = i + 1) 
         if (lw[i] >> (`GENERAL_RS_SIZE - 1) == 0) 
-          disable loop;
+          disable loop1;
       end
       if (i >= 96) 
         out = 0; // full
-      else if (hasimm == 0) 
-        lw[i] = ((2'b10 << 32 << 32 << 8) + reg2 << 8) + reg3 << 2;
-      else
-        lw[i] = (((2'b10 << 32 << 32) + $unsigned(imm) << 8) + reg2 << 8 << 2) + 1'b1;
-      rrsr = reg1;
-      rrswrite = i + 8'b10000000;
-      rrswritable = 1;
-      rrswritable = 0;
-      out = 1;
+      else begin 
+        if (hasimm == 0) 
+          lw[i] = ((2'b10 << 32 << 32 << 8) + reg2 << 8) + reg3 << 2;
+        else
+          lw[i] = (((2'b10 << 32 << 32) + $unsigned(imm) << 8) + reg2 << 8 << 2) + 1'b1;
+        rrsr = reg1;
+        rrswrite = i + 8'b10000000;
+        rrswritable = 1;
+        rrswritable = 0;
+        out = 1;
+      end
     end
-    2'b01: begin // sw
+    3'b001: begin // sw
       begin:loop2
       for (i = 0; i < 32; i = i + 1) 
         if (sw[i] >> (`SW_RS_SIZE - 1) == 0) 
@@ -183,13 +188,15 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out);
       end
       if (i >= 32) 
         out = 0; // full
-      else if (hasimm == 0) 
-        sw[i] = (((2'b10 << 32 << 32 << 32 << 8) + reg1 << 8) + reg2 << 8) + reg3 << 3;
-      else
-        sw[i] = ((((2'b10 << 32 << 32 << 32) + $unsigned(imm) << 8) + reg1 << 8) + reg2 << 8 << 3) + 1'b1;
-      out = 1;
+      else begin
+        if (hasimm == 0) 
+          sw[i] = (((2'b10 << 32 << 32 << 32 << 8) + reg1 << 8) + reg2 << 8) + reg3 << 3;
+        else
+          sw[i] = ((((2'b10 << 32 << 32 << 32) + $unsigned(imm) << 8) + reg1 << 8) + reg2 << 8 << 3) + 1'b1;
+        out = 1;
+      end
     end
-    2'b10: begin // add
+    3'b010: begin // add
       begin:loop3
       for (i = 0; i < 32; i = i + 1) 
         if (add[i] >> (`GENERAL_RS_SIZE - 1) == 0) 
@@ -197,33 +204,59 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out);
       end
       if (i >= 32) 
         out = 0; // full
-      else if (hasimm == 0) 
-        add[i] = ((2'b10 << 32 << 32 << 8) + reg2 << 8) + reg3 << 2;
-      else
-        add[i] = (((2'b10 << 32 << 32) + $unsigned(imm) << 8) + reg2 << 8 << 2) + 1'b1;
-      rrsr = reg1;
-      rrswrite = i + 8'b10100000;
-      rrswritable = 1;
-      rrswritable = 0;
-      out = 1;
+      else begin
+        if (hasimm == 0) 
+          add[i] = ((2'b10 << 32 << 32 << 8) + reg2 << 8) + reg3 << 2;
+        else
+          add[i] = (((2'b10 << 32 << 32) + $unsigned(imm) << 8) + reg2 << 8 << 2) + 1'b1;
+        rrsr = reg1;
+        rrswrite = i + 8'b10100000;
+        rrswritable = 1;
+        rrswritable = 0;
+        out = 1;
+      end
     end
-    2'b11: begin // mul
+    3'b011: begin // mul
       begin:loop4
       for (i = 0; i < 32; i = i + 1) 
         if (mul[i] >> (`GENERAL_RS_SIZE - 1) == 0) 
           disable loop4;
       end
-      if (i >= 32) 
+      if (i >= 32)
         out = 0; // full
-      else if (hasimm == 0) 
-        mul[i] = ((2'b10 << 32 << 32 << 8) + reg2 << 8) + reg3 << 2;
-      else
-        mul[i] = (((2'b10 << 32 << 32) + $unsigned(imm) << 8) + reg2 << 8 << 2) + 1'b1;
-      rrsr = reg1;
-      rrswrite = i + 8'b11000000;
-      rrswritable = 1;
-      rrswritable = 0;
-      out = 1;
+      else begin 
+        if (hasimm == 0) 
+          mul[i] = ((2'b10 << 32 << 32 << 8) + reg2 << 8) + reg3 << 2;
+        else
+          mul[i] = (((2'b10 << 32 << 32) + $unsigned(imm) << 8) + reg2 << 8 << 2) + 1'b1;
+        rrsr = reg1;
+        rrswrite = i + 8'b11000000;
+        rrswritable = 1;
+        rrswritable = 0;
+        out = 1;
+      end
+    end
+    3'b100: begin // mv
+      if (hasimm == 0) begin
+        begin:loop5
+          for (i = 0; i < 32; i = i + 1) 
+            if (add[i] >> (`GENERAL_RS_SIZE - 1) == 0) 
+              disable loop5;
+        end
+        if (i >= 32) 
+          out = 0; // full
+        else begin
+          add[i] = ((2'b10 << 32 << 32) + reg2 << 8 << 2) + 1'b1;
+          out = 1;
+        end
+      end else begin
+        rrsr = reg1;
+        rrswrite = 8'b01111111;
+        rrsinrf = imm;
+        rrswritable = 1;
+        rrswritable = 0;
+        out = 1;
+      end
     end
     endcase
   end
