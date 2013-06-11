@@ -26,6 +26,7 @@ module datamem(clk, in, readable, writable, write, out1, out2);
       out1 = 0;
       for (i = 0; i < `BLOCK_SIZE / `BYTE_SIZE; i = i + 1) 
         out1 = (out1 << `BYTE_SIZE) + data[(in >> 7 << 7) + i];
+      //$display("%b", out1);
       out2 = 0;
       for (i = 0; i < `BLOCK_SIZE / `BYTE_SIZE; i = i + 1)
         out2 = (out2 << `BYTE_SIZE) + data[(in >> 7 << 7) + `BLOCK_SIZE / `BYTE_SIZE + i];

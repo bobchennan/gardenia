@@ -2,13 +2,13 @@
 `include "datamem.v"
 // write back
 // if write miss, move out dirty cache, move in new block, write back
-module datacache(clk, in, readable, writable, write, out, over);
+module datacache(clk, in, readable, writable, write, out, miss);
   input clk;
   input[`WORD_SIZE-1:0] in; // address
   input readable, writable;
   input[`WORD_SIZE-1:0] write;
   output reg[`WORD_SIZE-1:0] out;
-  output reg over;
+  output reg miss;
 
   wire[`CACHE_OFFSET_LEN-1:0] offset;
   assign offset=in[4:0];
@@ -40,18 +40,15 @@ module datacache(clk, in, readable, writable, write, out, over);
     Dirty[1]=0;
     Dirty[2]=0;
     Dirty[3]=0;
-    over = 0;
+    miss = 0;
     cachereadable = 0;
     cachewritable = 0;
     cachewrite = 0;
   end
   
   reg[`BLOCK_SIZE-1:0] tmp;
-  always @(negedge clk) begin
-    over = 0;
-  end
   always @(posedge clk) begin:czp
-    $display("aa %b %b %b, %b", in, readable, out, Val[index]);
+    //$display("aa %b %b %b, %b", in, readable, out, Val[index]);
     if (writable == 1) begin
       if (hit == 1) begin 
         tmp = Val[index];
@@ -59,16 +56,17 @@ module datacache(clk, in, readable, writable, write, out, over);
          << (`BLOCK_SIZE - offset * `BYTE_SIZE -32))
          + (tmp & ((1 << (`BLOCK_SIZE - offset * `BYTE_SIZE -32)) - 1));
         Dirty[index] = 1;
-        end else begin
-          if (Dirty[index] == 1) begin
-            cachein = Tag[index] << 6 + index << 4;
-            cachewrite = Val[index];
-            cachewritable = 1;
-            cachewritable = 0;
-          end
+      end else begin
+        miss = 1;
+        if (Dirty[index] == 1) begin
+          cachein = Tag[index] << 6 + index << 4;
+          cachewrite = Val[index];
+          cachewritable = 1;
+          cachewritable = 0;
+        end
         cachein = in;
         cachereadable = 1;
-        Val[index] = ou1;
+        #`CACHE_MISS_TIME Val[index] = ou1;
         cachereadable = 0;
         Tag[index] = tag;
         Valid[index] = 1;
@@ -83,6 +81,7 @@ module datacache(clk, in, readable, writable, write, out, over);
       if (hit == 1) begin
           out = (Val[index] >> (`BLOCK_SIZE - offset * `BYTE_SIZE - `WORD_SIZE)) & 32'b11111111_11111111_11111111_11111111;
       end else begin
+        miss = 1;
         if (Dirty[index] == 1) begin
           cachein = Tag[index] << 6 + index << 4;
           cachewrite = Val[index];
@@ -92,14 +91,15 @@ module datacache(clk, in, readable, writable, write, out, over);
         end
         cachein = in;
         cachereadable = 1;
+        #`CACHE_MISS_TIME
         Val[index] = ou1;
         cachereadable = 0;
         Tag[index] = tag;
         Valid[index] = 1;
         out = (Val[index] >> (`BLOCK_SIZE - offset * `BYTE_SIZE - `WORD_SIZE)) & 32'b11111111_11111111_11111111_11111111;
-        $display("## %b %b %b", index, Val[index], ou1);
+        //$display("## %b %b %b", index, Val[index], ou1);
       end
     end
-    over = 1;
+    miss = 0;
   end
 endmodule

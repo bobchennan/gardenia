@@ -15,4 +15,4 @@
 `define GENERAL_RS_SIZE (1+1+32+32+8+8+1+1)
 `define SW_RS_SIZE (1+1+32+32+32+8+8+8+1+1+1)
 `define MAX_UNSIGN_INT ((1 << 32) -1)
-`define CACHE_MISS_TIME 10
+`define CACHE_MISS_TIME 100
