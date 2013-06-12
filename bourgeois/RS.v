@@ -3,7 +3,7 @@
 `include "datacache.v"
 `include "RRS.v"
 
-module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out);
+module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin, regout, regoutrf);
   input clk;
   input[2:0] unit; // 000 - lw, 001 - sw, 010 - add, 011 - mul, 100 - mv
   input[`REG_SIZE-1:0] reg1, reg2, reg3;
@@ -11,7 +11,11 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out);
   input signed[`WORD_SIZE-1:0] imm;
   input enable;
   output reg out;
-  
+  input regread;
+  input[`REG_SIZE-1:0] regin;
+  output reg[`UNIT_SIZE-1:0] regout;
+  output reg signed[`WORD_SIZE-1:0] regoutrf;
+    
   //unit code
   //lw : 10000000 - 11011111
   //sw : 00000000 - 00011111
@@ -174,8 +178,12 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out);
       check = 1;
       check = 0;
     end
+    if (regread == 1) begin
+      rrsr = regin;
+      regout = rrsout;
+      regoutrf = rrsoutrf;
+    end
   end
-  
   
   reg[`UNIT_SIZE-1:0] i;
   reg[`GENERAL_RS_SIZE-1:0] tmp2;
