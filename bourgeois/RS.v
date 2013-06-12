@@ -33,11 +33,13 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out);
     reg[`GENERAL_RS_SIZE-1:0] tmp2;
     assign tmp = add[geni];
     ADD addd(addout, $signed(tmp[81:50]), $signed(tmp[49:18]));
-    always begin
+    always @(posedge clk) begin
       if (tmp[1:1] == 1 && tmp[0:0] == 1) begin
         cdb = ((8'b00100000 + geni) << `WORD_SIZE) + $unsigned(addout);
         add[geni] = 0;
       end
+    end
+    always begin
       if (cdb >> (`UNIT_SIZE + `WORD_SIZE) == 0) begin
         if (cdb >> `WORD_SIZE == (tmp >> 10) & 8'b11111111 && (tmp >> 1) & 1'b1 == 0) begin
           tmp2 = add[geni] & ((1 << 50) - 1);
@@ -59,11 +61,13 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out);
     reg[`GENERAL_RS_SIZE-1:0] tmp2;
     assign tmp = mul[geni];
     MUL mull(mulout, $signed(tmp[81:50]), $signed(tmp[49:18]));
-    always begin
+    always @(posedge clk) begin
       if (tmp[1:1] == 1 && tmp[0:0] == 1) begin
         cdb = ((8'b01000000 + geni) << `WORD_SIZE) + $unsigned(mulout);
         mul[geni] = 0;
       end
+    end
+    always begin
       if (cdb >> (`UNIT_SIZE + `WORD_SIZE) == 0) begin
         if (cdb >> `WORD_SIZE == (tmp >> 10) & 8'b11111111 && (tmp >> 1) & 1'b1 == 0) begin
           tmp2 = mul[geni] & ((1 << 50) - 1);
@@ -92,20 +96,17 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out);
     assign tmp = lw[geni];
     reg[`WORD_SIZE-1:0] addres; // add result
     ADD addd(addres, $signed(tmp[81:50]), $signed(tmp[49:18]));
-    always begin // need condition
+    always @(posedge clk) begin // need condition
       if (tmp[1:1] == 1'b1 && tmp[0:0] == 1'b1) begin
         cachein = addres;
         readable = 1;
         lwout = cacheout;
         readable = 0;
-        lw[geni] = lw[geni] | (1 << (`GENERAL_RS_SIZE - 2));
-      end
-    end
-    always begin
-      if (tmp[`GENERAL_RS_SIZE - 2:`GENERAL_RS_SIZE - 2] == 1) begin
         cdb = ((8'b10000000 + geni) << `WORD_SIZE) + $unsigned(lwout);
         lw[geni] = 0;
       end
+    end
+    always begin
       if (cdb >> (`UNIT_SIZE + `WORD_SIZE) == 0) begin
         if (cdb >> `WORD_SIZE == (tmp >> 10) & 8'b11111111 && (tmp >> 1) & 1'b1 == 0) begin
           tmp2 = lw[geni] & ((1 << 50) - 1);
@@ -127,7 +128,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out);
     assign tmp = lw[geni];
     reg[`WORD_SIZE-1:0] addres;
     ADD addd(addres, $signed(tmp[81:50]), $signed(tmp[49:18]));
-    always begin // need condition
+    always @(posedge clk) begin // need condition
       if (tmp[2:2] == 1'b1 && tmp[1:1] == 1'b1 && tmp[0:0] == 1'b1) begin
         write = tmp[113:82];
         cachein = addres;
@@ -141,7 +142,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out);
         tmp2 = sw[geni] & ((1 << 91) - 1);
         sw[geni] = (((sw[geni] >> 123 << 32) + (cdb & `MAX_UNSIGN_INT) << 91) + tmp2) | 3'b100;
       end
-	  if (cdb >> `WORD_SIZE == (tmp >> 11) & 8'b11111111 && (tmp >> 1) & 1'b1 == 0) begin
+      if (cdb >> `WORD_SIZE == (tmp >> 11) & 8'b11111111 && (tmp >> 1) & 1'b1 == 0) begin
         tmp2 = sw[geni] & ((1 << 59) - 1);
         sw[geni] = (((sw[geni] >> 91 << 32) + (cdb & `MAX_UNSIGN_INT) << 59) + tmp2) | 3'b010;
       end
@@ -178,7 +179,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out);
   
   reg[`UNIT_SIZE-1:0] i;
   reg[`GENERAL_RS_SIZE-1:0] tmp2;
-  always @(posedge clk) begin
+  always begin
     if (enable == 1) begin
     case (unit) 
       3'b000: begin // lw
