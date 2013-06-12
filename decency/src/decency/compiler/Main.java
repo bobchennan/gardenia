@@ -255,6 +255,7 @@ public class Main {
 		}
 		Program tree = (Program) parseTree.value;
 		visit(tree);
+		emit(new HALT());
 	}
 
 	public static void main(String argv[]) throws IOException {

@@ -43,6 +43,8 @@ public class Assembler {
 				gen((MV) ai);
 			else if (ai instanceof NOP)
 				emit("");// NOP
+			else if (ai instanceof HALT)
+				emit("0001");
 			else
 				System.err.println("Undefined assemble instruction.");
 			++counter;
