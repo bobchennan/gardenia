@@ -104,7 +104,10 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
       if (tmp[1:1] == 1'b1 && tmp[0:0] == 1'b1) begin
         cachein = addres;
         readable = 1;
-        lwout = cacheout;
+        if (miss == 1) begin
+          #`CACHE_MISS_TIME lwout = cacheout;
+        end else
+          lwout = cacheout;
         readable = 0;
         cdb = ((8'b10000000 + geni) << `WORD_SIZE) + $unsigned(lwout);
         lw[geni] = 0;
@@ -137,7 +140,10 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
         write = tmp[113:82];
         cachein = addres;
         writable = 1;
-        writable = 0;
+        if (miss == 1) begin
+          #`CACHE_MISS_TIME writable = 0;
+        end else
+          writable = 0;
         sw[geni] = 0;
       end
     end
