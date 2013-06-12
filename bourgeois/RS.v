@@ -130,8 +130,8 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
   
   //ALU for sw
   generate for (geni = 0; geni < 32; geni = geni + 1) begin:czpsw
-    wire[`GENERAL_RS_SIZE-1:0] tmp;
-    reg[`GENERAL_RS_SIZE-1:0] tmp2;
+    wire[`SW_RS_SIZE-1:0] tmp;
+    reg[`SW_RS_SIZE-1:0] tmp2;
     assign tmp = lw[geni];
     reg[`WORD_SIZE-1:0] addres;
     ADD addd(addres, $signed(tmp[81:50]), $signed(tmp[49:18]));
