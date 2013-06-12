@@ -194,6 +194,10 @@ module fetch(clk, pc, newpc);
               finish = 1;
               disable loop;
             end
+            4'b0001:begin
+              finish = 0;
+              disable loop;
+            end
             default:begin
               idx = idx - `WORD_SIZE;
             end
