@@ -98,7 +98,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
     reg signed[`WORD_SIZE-1:0] lwout;
     reg[`GENERAL_RS_SIZE-1:0] tmp2;
     assign tmp = lw[geni];
-    reg[`WORD_SIZE-1:0] addres; // add result
+    wire[`WORD_SIZE-1:0] addres; // add result
     ADD addd(addres, $signed(tmp[81:50]), $signed(tmp[49:18]));
     always @(posedge clk) begin // need condition
       if (tmp[1:1] == 1'b1 && tmp[0:0] == 1'b1) begin
@@ -133,7 +133,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
     wire[`SW_RS_SIZE-1:0] tmp;
     reg[`SW_RS_SIZE-1:0] tmp2;
     assign tmp = lw[geni];
-    reg[`WORD_SIZE-1:0] addres;
+    wire[`WORD_SIZE-1:0] addres;
     ADD addd(addres, $signed(tmp[81:50]), $signed(tmp[49:18]));
     always @(posedge clk) begin // need condition
       if (tmp[2:2] == 1'b1 && tmp[1:1] == 1'b1 && tmp[0:0] == 1'b1) begin

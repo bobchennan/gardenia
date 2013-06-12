@@ -19,12 +19,11 @@ module fetch(clk, pc, newpc);
   reg signed[`WORD_SIZE-1:0] imm;
   reg enable;
   wire out2;
-  RS rs(.clk(clk), .unit(unit), .reg1(reg1), .reg2(reg2), .reg3(reg3), .hasimm(hasimm), .imm(imm), .enable(enable), .out(out2));
-  
-  reg[5:0] r;
-  wire[`UNIT_SIZE-1:0] rsout;
-  wire signed[`WORD_SIZE-1:0] outrf;
-  RRS rrs(.clk(clk), .r(r), .writable(0), .write(`UNIT_SIZE'b0), .inrf(0), .out(rsout), .outrf(outrf), .check(0));
+  reg regread;
+  reg[`REG_SIZE-1:0] regin;
+  wire[`UNIT_SIZE-1:0] regout;
+  wire signed[`WORD_SIZE-1:0] regoutrf;
+  RS rs(.clk(clk), .unit(unit), .reg1(reg1), .reg2(reg2), .reg3(reg3), .hasimm(hasimm), .imm(imm), .enable(enable), .out(out2), .regread(regread), .regin(regin), .regout(regout), .regoutrf(regoutrf));
   
   reg signed[`WORD_SIZE-1:0] va, vb;
   
@@ -89,13 +88,17 @@ module fetch(clk, pc, newpc);
             4'b1010:begin
               reg1 = inst[27:22];
               reg2 = inst[21:16];
-              r = reg1;
-              va = outrf;
-              if(rsout!=8'b01111111)
+              regin = reg1;
+              regread = 1;
+              va = regoutrf;
+              regread = 0;
+              if(regout!=8'b01111111)
                 disable loop;
-              r = reg2;
-              vb = outrf;
-              if(rsout!=8'b01111111)
+              regin = reg2;
+              regread = 1;
+              vb = regoutrf;
+              regread = 0;
+              if(regout!=8'b01111111)
                 disable loop;
               if(va > vb)begin
                 newpc = inst[15:0];
@@ -107,6 +110,9 @@ module fetch(clk, pc, newpc);
               end
               else
                 idx = idx - `WORD_SIZE;
+            end
+            4'b1011:begin
+              //to do
             end
             4'b1100:begin
               unit = 3'b000;
