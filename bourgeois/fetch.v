@@ -195,7 +195,10 @@ module fetch(clk, pc, newpc);
               disable loop;
             end
             4'b0001:begin
+              unit = 3'b101;
+              enable = 1;
               finish = 0;
+              enable = 0;
               disable loop;
             end
             default:begin

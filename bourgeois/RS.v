@@ -204,25 +204,25 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
   always begin
     if (halt == 1) begin
       over = 1;
-      for (j = 0; j < 96; j = j + 1)
+      for (j = 0; j < 96 && over; j = j + 1)
         if (lw[j] >> (`GENERAL_RS_SIZE - 1) == 0) begin
           over = 0;
-          break;
+          //break;
         end
-      for (j = 0; j < 32; j = j + 1)
+      for (j = 0; j < 32 && over; j = j + 1)
         if (sw[j] >> (`SW_RS_SIZE - 1) == 0) begin
           over = 0;
-          break;
+          //break;
         end
-      for (j = 0; j < 32; j = j + 1)
+      for (j = 0; j < 32 && over; j = j + 1)
         if (add[j] >> (`GENERAL_RS_SIZE - 1) == 0) begin
           over = 0;
-          break;
+          //break;
         end
-      for (j = 0; j < 32; j = j + 1)
+      for (j = 0; j < 32 && over; j = j + 1)
         if (mul[j] >> (`GENERAL_RS_SIZE - 1) == 0) begin
           over = 0;
-          break;
+          //break;
         end
       if (over == 1) begin
         flush = 1;
