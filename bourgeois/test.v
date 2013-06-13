@@ -21,13 +21,9 @@ module test();
   initial begin
   end
    
-  always @(posedge clkout)  begin
-    $display("posedge");
-    
-              unit = 3'b101;
-              enable = 1;
-              $display("finish");
-              enable = 0;
+  always begin
+    $display("cnx");
+    $finish(2);
   end
 endmodule
 
