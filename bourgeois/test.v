@@ -19,11 +19,14 @@ module test();
   reg signed[`WORD_SIZE-1:0] va, vb;
   
   initial begin
+    $display("start");
+    enable = 0;
   end
    
   always begin
     $display("cnx");
     $finish(2);
   end
+  
 endmodule
 

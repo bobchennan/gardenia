@@ -32,7 +32,7 @@ module datamem(clk, in, readable, writable, write, out1, out2, flush);
         out2 = (out2 << `BYTE_SIZE) + data[(in >> 7 << 7) + `BLOCK_SIZE / `BYTE_SIZE + i];
     end
   end
-  always begin
+  always @(flush) begin
     if (flush == 1) begin: cpures
       integer outfile, i;
       outfile =  $fopen("cpures.txt");

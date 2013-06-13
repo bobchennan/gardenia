@@ -103,7 +103,7 @@ module datacache(clk, in, readable, writable, write, out, miss, flush);
     miss = 0;
   end
   
-  always begin
+  always @(flush) begin
     if (flush == 1) begin
       for (i = 0; i < 4; i = i + 1) 
         if (Valid[i] == 1 && Dirty[i] == 1) begin

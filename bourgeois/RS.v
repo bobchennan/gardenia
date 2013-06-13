@@ -24,9 +24,10 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
   //mv(register has its value) : 01111111
   reg[`GENERAL_RS_SIZE-1:0] add[0:32-1], mul[0:32-1], lw[0:96-1];
   reg[`SW_RS_SIZE-1:0] sw[0:32-1];
-  reg[`UNIT_SIZE + `WORD_SIZE:0] cdb;
+  reg[`UNIT_SIZE + `WORD_SIZE:0 - 1] cdb;
+  reg cdbchange;
   initial begin
-    cdb = 1 << (`UNIT_SIZE + `WORD_SIZE);
+    cdbchange = 0;
   end
   
   genvar geni;
@@ -41,10 +42,11 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
       if (tmp[1:1] == 1 && tmp[0:0] == 1) begin
         cdb = ((8'b00100000 + geni) << `WORD_SIZE) + $unsigned(addout);
         add[geni] = 0;
+        cdbchange = 1;
       end
     end
-    always begin
-      if (cdb >> (`UNIT_SIZE + `WORD_SIZE) == 0) begin
+    always @(cdbchange) begin
+      if (cdbchange) begin
         if (cdb >> `WORD_SIZE == (tmp >> 10) & 8'b11111111 && (tmp >> 1) & 1'b1 == 0) begin
           tmp2 = add[geni] & ((1 << 50) - 1);
           add[geni] = (((add[geni] >> 82 << 32) + (cdb & `MAX_UNSIGN_INT) << 50) + tmp2) | 2'b10;
@@ -53,6 +55,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
           tmp2 = add[geni] & ((1 << 18) - 1);
           add[geni] = (((add[geni] >> 50 << 32) + (cdb & `MAX_UNSIGN_INT) << 18) + tmp2) | 2'b01;
         end
+        cdbchange = 0;
       end
     end
   end
@@ -69,10 +72,11 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
       if (tmp[1:1] == 1 && tmp[0:0] == 1) begin
         cdb = ((8'b01000000 + geni) << `WORD_SIZE) + $unsigned(mulout);
         mul[geni] = 0;
+        cdbchange = 1;
       end
     end
-    always begin
-      if (cdb >> (`UNIT_SIZE + `WORD_SIZE) == 0) begin
+    always @(cdbchange) begin
+      if (cdbchange) begin
         if (cdb >> `WORD_SIZE == (tmp >> 10) & 8'b11111111 && (tmp >> 1) & 1'b1 == 0) begin
           tmp2 = mul[geni] & ((1 << 50) - 1);
           mul[geni] = (((mul[geni] >> 82 << 32) + (cdb & `MAX_UNSIGN_INT) << 50) + tmp2) | 2'b10;
@@ -81,6 +85,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
           tmp2 = mul[geni] & ((1 << 18) - 1);
           mul[geni] = (((mul[geni] >> 50 << 32) + (cdb & `MAX_UNSIGN_INT) << 18) + tmp2) | 2'b01;
         end
+        cdbchange = 0;
       end
     end
   end
@@ -115,10 +120,11 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
         readable = 0;
         cdb = ((8'b10000000 + geni) << `WORD_SIZE) + $unsigned(lwout);
         lw[geni] = 0;
+        cdbchange = 1;
       end
     end
-    always begin
-      if (cdb >> (`UNIT_SIZE + `WORD_SIZE) == 0) begin
+    always @(cdbchange) begin
+      if (cdbchange) begin
         if (cdb >> `WORD_SIZE == (tmp >> 10) & 8'b11111111 && (tmp >> 1) & 1'b1 == 0) begin
           tmp2 = lw[geni] & ((1 << 50) - 1);
           lw[geni] = (((lw[geni] >> 82 << 32) + (cdb & `MAX_UNSIGN_INT) << 50) + tmp2) | 2'b10;
@@ -127,6 +133,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
           tmp2 = lw[geni] & ((1 << 18) - 1);
           lw[geni] = (((lw[geni] >> 50 << 32) + (cdb & `MAX_UNSIGN_INT) << 18) + tmp2) | 2'b01;
         end
+        cdbchange = 0;
       end
     end
   end
@@ -151,18 +158,21 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
         sw[geni] = 0;
       end
     end
-    always begin
-      if (cdb >> `WORD_SIZE == (tmp >> 19) & 8'b11111111 && (tmp >> 2) & 1'b1 == 0) begin
-        tmp2 = sw[geni] & ((1 << 91) - 1);
-        sw[geni] = (((sw[geni] >> 123 << 32) + (cdb & `MAX_UNSIGN_INT) << 91) + tmp2) | 3'b100;
-      end
-      if (cdb >> `WORD_SIZE == (tmp >> 11) & 8'b11111111 && (tmp >> 1) & 1'b1 == 0) begin
-        tmp2 = sw[geni] & ((1 << 59) - 1);
-        sw[geni] = (((sw[geni] >> 91 << 32) + (cdb & `MAX_UNSIGN_INT) << 59) + tmp2) | 3'b010;
-      end
-      if (cdb >> `WORD_SIZE == (tmp >> 3) & 8'b11111111 && tmp & 1'b1 == 0) begin
-        tmp2 = sw[geni] & ((1 << 27) - 1);
-        sw[geni] = (((sw[geni] >> 59 << 32) + (cdb & `MAX_UNSIGN_INT) << 27) + tmp2) | 3'b001;
+    always @(cdbchange) begin
+      if (cdbchange) begin
+        if (cdb >> `WORD_SIZE == (tmp >> 19) & 8'b11111111 && (tmp >> 2) & 1'b1 == 0) begin
+          tmp2 = sw[geni] & ((1 << 91) - 1);
+          sw[geni] = (((sw[geni] >> 123 << 32) + (cdb & `MAX_UNSIGN_INT) << 91) + tmp2) | 3'b100;
+        end
+        if (cdb >> `WORD_SIZE == (tmp >> 11) & 8'b11111111 && (tmp >> 1) & 1'b1 == 0) begin
+          tmp2 = sw[geni] & ((1 << 59) - 1);
+          sw[geni] = (((sw[geni] >> 91 << 32) + (cdb & `MAX_UNSIGN_INT) << 59) + tmp2) | 3'b010;
+        end
+        if (cdb >> `WORD_SIZE == (tmp >> 3) & 8'b11111111 && tmp & 1'b1 == 0) begin
+          tmp2 = sw[geni] & ((1 << 27) - 1);
+          sw[geni] = (((sw[geni] >> 59 << 32) + (cdb & `MAX_UNSIGN_INT) << 27) + tmp2) | 3'b001;
+        end
+        cdbchange = 0;
       end
     end
   end
@@ -181,13 +191,15 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
     rrswritable = 0;
     check = 0;
   end
-  always begin
-    if (cdb >> (`UNIT_SIZE + `WORD_SIZE) == 0) begin
+  always @(cdbchange) begin
+    if (cdbchange) begin
       rrswrite = cdb >> `WORD_SIZE;
       rrsinrf = cdb & ((1 << `WORD_SIZE) - 1);
       check = 1;
       check = 0;
     end
+  end
+  always @(regread) begin
     if (regread == 1) begin
       rrsr = regin;
       regout = rrsout;
@@ -201,7 +213,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
     halt = 0;
     over = 0;
   end
-  always begin
+  always @(halt) begin
     if (halt == 1) begin
       over = 1;
       for (j = 0; j < 96 && over; j = j + 1)
@@ -234,7 +246,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
   
   reg[`UNIT_SIZE-1:0] i;
   reg[`GENERAL_RS_SIZE-1:0] tmp2;
-  always begin
+  always @(enable) begin
     if (enable == 1) begin
     case (unit) 
       3'b000: begin // lw
