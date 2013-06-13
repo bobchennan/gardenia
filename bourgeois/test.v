@@ -19,6 +19,8 @@ module test();
   reg signed[`WORD_SIZE-1:0] va, vb;
   
   initial begin
+    $display("start");
+    enable = 0;
   end
    
   always @(posedge clkout)  begin
@@ -29,5 +31,6 @@ module test();
               $display("finish");
               enable = 0;
   end
+  
 endmodule
 

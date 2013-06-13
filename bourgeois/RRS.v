@@ -20,7 +20,7 @@ module RRS(clk, r, writable, write, inrf, out, outrf, check);
     end
   end
   
-  always begin
+  always @(check) begin
     if (check == 1) begin
       for (i = 0; i < 64; i = i + 1) 
         if (rrs[i] == write) begin
@@ -28,14 +28,18 @@ module RRS(clk, r, writable, write, inrf, out, outrf, check);
           rf[i] = inrf;
         end
     end
+  end
+  always @(writable) begin
     if (writable == 1) begin
       rrs[r] = write;
       if (write == 8'b01111111) 
         rf[r] = inrf;
-	  end	else begin
-      out = rrs[r];
-      if (rrs[r] == 8'b01111111)
-        outrf = rf[r];
-    end
+	  end
+	  out = rrs[r];
+    outrf = rf[r];
+	end
+	always @(r) begin
+    out = rrs[r];
+    outrf = rf[r];
   end
 endmodule
