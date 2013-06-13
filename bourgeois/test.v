@@ -3,13 +3,31 @@
 module test();
   wire clkout;
   clock clk(.out(clkout));
-  reg [10:0] i,abc;
+  
+  reg[2:0] unit; // 000 - lw, 001 - sw, 010 - add, 011 - mul, 100 - mv
+  reg[`REG_SIZE-1:0] reg1, reg2, reg3;
+  reg hasimm;
+  reg signed[`WORD_SIZE-1:0] imm;
+  reg enable;
+  wire out2;
+  reg regread;
+  reg[`REG_SIZE-1:0] regin;
+  wire[`UNIT_SIZE-1:0] regout;
+  wire signed[`WORD_SIZE-1:0] regoutrf;
+  RS rs(.clk(clkout), .unit(unit), .reg1(reg1), .reg2(reg2), .reg3(reg3), .hasimm(hasimm), .imm(imm), .enable(enable), .out(out2), .regread(regread), .regin(regin), .regout(regout), .regoutrf(regoutrf));
+  
+  reg signed[`WORD_SIZE-1:0] va, vb;
+  
   initial begin
-        abc=0;
   end
-  always @(negedge abc)  begin
-    abc=abc+1;
-    $display("%g",abc);
+   
+  always @(posedge clkout)  begin
+    $display("posedge");
     
+              unit = 3'b101;
+              enable = 1;
+              $display("finish");
+              enable = 0;
   end
 endmodule
+

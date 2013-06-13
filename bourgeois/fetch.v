@@ -36,6 +36,7 @@ module fetch(clk, pc, newpc);
   end
   
   always @(posedge clk)begin
+    $display("posedge");
     if(miss)
       #`CACHE_MISS_TIME finish = finish;
     if(finish)begin
@@ -198,6 +199,7 @@ module fetch(clk, pc, newpc);
               unit = 3'b101;
               enable = 1;
               finish = 0;
+              $display("finish");
               enable = 0;
               disable loop;
             end
