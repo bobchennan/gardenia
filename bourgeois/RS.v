@@ -5,7 +5,7 @@
 
 module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin, regout, regoutrf);
   input clk;
-  input[2:0] unit; // 000 - lw, 001 - sw, 010 - add, 011 - mul, 100 - mv
+  input[2:0] unit; // 000 - lw, 001 - sw, 010 - add, 011 - mul, 100 - mv, 101 - halt
   input[`REG_SIZE-1:0] reg1, reg2, reg3;
   input hasimm;
   input signed[`WORD_SIZE-1:0] imm;
@@ -91,7 +91,11 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
   reg[`WORD_SIZE-1:0] write;
   wire[`WORD_SIZE-1:0] cacheout;
   wire miss;
-  datacache data(clk, cachein, readable, writable, write, cacheout, miss);
+  reg flush;
+  datacache data(clk, cachein, readable, writable, write, cacheout, miss, flush);
+  initial begin
+    flush = 0;
+  end
   //ALU for lw
   generate for (geni = 0; geni < 32; geni = geni + 1) begin:czplw
     wire[`GENERAL_RS_SIZE-1:0] tmp;
@@ -188,6 +192,43 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
       rrsr = regin;
       regout = rrsout;
       regoutrf = rrsoutrf;
+    end
+  end
+  
+  reg halt, over;
+  reg[`UNIT_SIZE-1:0] j;
+  initial begin
+    halt = 0;
+    over = 0;
+  end
+  always begin
+    if (halt == 1) begin
+      over = 1;
+      for (j = 0; j < 96; j = j + 1)
+        if (lw[j] >> (`GENERAL_RS_SIZE - 1) == 0) begin
+          over = 0;
+          break;
+        end
+      for (j = 0; j < 32; j = j + 1)
+        if (sw[j] >> (`SW_RS_SIZE - 1) == 0) begin
+          over = 0;
+          break;
+        end
+      for (j = 0; j < 32; j = j + 1)
+        if (add[j] >> (`GENERAL_RS_SIZE - 1) == 0) begin
+          over = 0;
+          break;
+        end
+      for (j = 0; j < 32; j = j + 1)
+        if (mul[j] >> (`GENERAL_RS_SIZE - 1) == 0) begin
+          over = 0;
+          break;
+        end
+      if (over == 1) begin
+        flush = 1;
+      end else begin
+        #1 over = 0;
+      end
     end
   end
   
@@ -367,6 +408,9 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
         rrswritable = 0;
         out = 1;
       end
+    end
+    3'b101: begin // halt
+      halt = 1;
     end
     endcase
   end

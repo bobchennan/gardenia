@@ -2,13 +2,14 @@
 `include "datamem.v"
 // write back
 // if write miss, move out dirty cache, move in new block, write back
-module datacache(clk, in, readable, writable, write, out, miss);
+module datacache(clk, in, readable, writable, write, out, miss, flush);
   input clk;
   input[`WORD_SIZE-1:0] in; // address
   input readable, writable;
   input[`WORD_SIZE-1:0] write;
   output reg[`WORD_SIZE-1:0] out;
   output reg miss;
+  input flush;
 
   wire[`CACHE_OFFSET_LEN-1:0] offset;
   assign offset=in[4:0];
@@ -29,21 +30,20 @@ module datacache(clk, in, readable, writable, write, out, miss);
   wire[`BLOCK_SIZE-1:0] ou1, ou2;
   reg cachereadable, cachewritable;
   reg[`WORD_SIZE-1:0] cachein;
-  datamem data(.clk(clk), .in(cachein), .readable(cachereadable), .writable(cachewritable), .write(cachewrite), .out1(ou1), .out2(ou2));
-    
+  reg cacheflush;
+  datamem data(clk, cachein, cachereadable, cachewritable, cachewrite, ou1, ou2, cacheflush);
+  
+  reg[`CACHE_GROUP-1:0] i;
   initial begin
-    Valid[0]=0;
-    Valid[1]=0;
-    Valid[2]=0;
-    Valid[3]=0;
-    Dirty[0]=0;
-    Dirty[1]=0;
-    Dirty[2]=0;
-    Dirty[3]=0;
+    for (i = 0; i < 4; i = i + 1) begin
+      Valid[i] = 0;
+      Dirty[i] = 0;
+    end
     miss = 0;
     cachereadable = 0;
     cachewritable = 0;
     cachewrite = 0;
+    cacheflush = 0;
   end
   
   reg[`BLOCK_SIZE-1:0] tmp;
@@ -101,5 +101,19 @@ module datacache(clk, in, readable, writable, write, out, miss);
       end
     end
     miss = 0;
+  end
+  
+  always begin
+    if (flush == 1) begin
+      for (i = 0; i < 4; i = i + 1) 
+        if (Valid[i] == 1 && Dirty[i] == 1) begin
+          cachein = Tag[i] << 6 + i << 4;
+          cachewrite = Val[i];
+          cachewritable = 1;
+          cachewritable = 0;
+          Dirty[i] = 0;
+        end
+      cacheflush = 1;
+    end
   end
 endmodule

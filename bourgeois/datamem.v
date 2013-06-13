@@ -1,14 +1,14 @@
 `include "define.v"
 
-module datamem(clk, in, readable, writable, write, out1, out2);
+module datamem(clk, in, readable, writable, write, out1, out2, flush);
   input clk;
   input[`WORD_SIZE-1:0] in; // address
   input readable, writable;
   input[`BLOCK_SIZE-1:0] write;
-  output out1, out2;
-  reg[`BLOCK_SIZE-1:0] out1, out2;
+  output reg[`BLOCK_SIZE-1:0] out1, out2;
+  input flush;
   
-  reg[`BYTE_SIZE-1:0] data[0:`INST_MEM_SIZE];
+  reg[`BYTE_SIZE-1:0] data[0:`DATA_MEM_SIZE-1];
   reg[`WORD_SIZE-1:0] i;
 
   initial begin
@@ -30,6 +30,16 @@ module datamem(clk, in, readable, writable, write, out1, out2);
       out2 = 0;
       for (i = 0; i < `BLOCK_SIZE / `BYTE_SIZE; i = i + 1)
         out2 = (out2 << `BYTE_SIZE) + data[(in >> 7 << 7) + `BLOCK_SIZE / `BYTE_SIZE + i];
+    end
+  end
+  always begin
+    if (flush == 1) begin: cpures
+      integer outfile, i;
+      outfile =  $fopen("cpures.txt");
+      for (i = 0; i < `DATA_MEM_SIZE; i = i + 4)
+        $fdisplay(outfile, "%h %h %h %h\n", data[i], data[i+1], data[i+2], data[i+3]);
+      $fclose(outfile);
+      $finish(2);
     end
   end
 endmodule
