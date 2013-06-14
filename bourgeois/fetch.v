@@ -55,14 +55,20 @@ module fetch(clk, pc, newpc);
                 hasimm = 1;
                 imm = inst[15:1];
                 enable = 1;
-                if(out2!=0)idx = idx - `WORD_SIZE;
+                while(out2!=0)begin
+                  //wait
+                end
+                idx = idx - `WORD_SIZE;
                 enable = 0;
               end else begin
                 //reg
                 hasimm = 0;
                 reg3 = inst[15:10];
                 enable = 1;
-                if(out2!=0)idx = idx - `WORD_SIZE;
+                while(out2!=0)begin
+                  //wait
+                end
+                idx = idx - `WORD_SIZE;
                 enable = 0;
               end
             end
@@ -75,14 +81,20 @@ module fetch(clk, pc, newpc);
                 hasimm = 1;
                 imm = inst[15:1];
                 enable = 1;
-                if(out2!=0)idx = idx - `WORD_SIZE;
+                while(out2!=0)begin
+                  //wait
+                end
+                idx = idx - `WORD_SIZE;
                 enable = 0;
               end else begin
                 //reg
                 hasimm = 0;
                 reg3 = inst[15:10];
                 enable = 1;
-                if(out2!=0)idx = idx - `WORD_SIZE;
+                while(out2!=0)begin
+                  //wait
+                end
+                idx = idx - `WORD_SIZE;
                 enable = 0;
               end
             end
@@ -124,14 +136,20 @@ module fetch(clk, pc, newpc);
                 hasimm = 1;
                 imm = inst[15:1];
                 enable = 1;
-                if(out2!=0)idx = idx - `WORD_SIZE;
+                while(out2!=0)begin
+                  //wait
+                end
+                idx = idx - `WORD_SIZE;
                 enable = 0;
               end else begin
                 //reg
                 hasimm = 0;
                 reg3 = inst[15:10];
                 enable = 1;
-                if(out2!=0)idx = idx - `WORD_SIZE;
+                while(out2!=0)begin
+                  //wait
+                end
+                idx = idx - `WORD_SIZE;
                 enable = 0;
               end
             end
@@ -144,14 +162,20 @@ module fetch(clk, pc, newpc);
                 hasimm = 1;
                 imm = inst[15:1];
                 enable = 1;
-                if(out2!=0)idx = idx - `WORD_SIZE;
+                while(out2!=0)begin
+                  //wait
+                end
+                idx = idx - `WORD_SIZE;
                 enable = 0;
               end else begin
                 //reg
                 hasimm = 0;
                 reg3 = inst[15:10];
                 enable = 1;
-                if(out2!=0)idx = idx - `WORD_SIZE;
+                while(out2!=0)begin
+                  //wait
+                end
+                idx = idx - `WORD_SIZE;
                 enable = 0;
               end
             end
@@ -171,13 +195,19 @@ module fetch(clk, pc, newpc);
                 hasimm = 1;
                 imm = inst[21:0];
                 enable = 1;
-                if(out2!=0)idx = idx - `WORD_SIZE;
+                while(out2!=0)begin
+                  //wait
+                end
+                idx = idx - `WORD_SIZE;
                 enable = 0;
               end else begin
                 hasimm = 0;
                 reg2 = inst[21:16];
                 enable = 1;
-                if(out2!=0)idx = idx - `WORD_SIZE;
+                while(out2!=0)begin
+                  //wait
+                end
+                idx = idx - `WORD_SIZE;
                 enable = 0;
               end
             end
