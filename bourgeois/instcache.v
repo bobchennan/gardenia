@@ -38,7 +38,7 @@ module instcache(clk, in, out, miss);
   always @(posedge clk) begin:cnx
       if(hit == 0)begin
 		    miss = 1;
-		    $display("cache miss");
+		    //$display("%b cache miss", in);
 		    #`CACHE_MISS_TIME Val[index] = ou1;
 		    Val2[index] = ou2;
         Tag[index] = tag;

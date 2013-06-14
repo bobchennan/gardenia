@@ -36,7 +36,6 @@ module fetch(clk, pc, newpc);
   end
   
   always @(posedge clk)begin
-    $display("posedge");
     if(miss)
       #`CACHE_MISS_TIME finish = finish;
     if(finish)begin
@@ -114,7 +113,7 @@ module fetch(clk, pc, newpc);
               if(regout!=8'b01111111)
                 disable loop;
               if(va > vb)begin
-                newpc = inst[15:0];
+                newpc = $unsigned($signed(newpc) + $signed(inst[27:0]));
                 if(miss)begin
                   #`CACHE_MISS_TIME idx = 992;
                 end
@@ -180,7 +179,7 @@ module fetch(clk, pc, newpc);
               end
             end
             4'b1110:begin
-              newpc = inst[27:0];
+              newpc = $unsigned($signed(newpc) + $signed(inst[27:0]));
               if(miss)begin
                   #`CACHE_MISS_TIME idx = 992;
                 end
@@ -231,6 +230,10 @@ module fetch(clk, pc, newpc);
               finish = 0;
               $display("finish");
               enable = 0;
+              disable loop;
+            end
+            4'bxxxx:begin
+              finish = 0;
               disable loop;
             end
             default:begin
