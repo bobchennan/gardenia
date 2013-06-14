@@ -229,7 +229,6 @@ module fetch(clk, pc, newpc);
               enable = 1;
               finish = 0;
               $display("finish");
-              enable = 0;
               disable loop;
             end
             4'bxxxx:begin
