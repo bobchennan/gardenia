@@ -54,7 +54,7 @@ public class Main {
 	private static void visit(Declarator x) {
 		if (x._cexp != null) {
 			dict.put(x._x._sym, offset);
-			int cnt = 1;
+			int cnt = 4;
 			for (int i = 0; i < x._cexp._l.size(); ++i)
 				cnt *= ((IntLiteral) x._cexp._l.get(i))._x;
 			offset += cnt;
@@ -126,9 +126,9 @@ public class Main {
 					int bb = reguse++;
 					int cc = reguse++;
 					int aij = reguse++;
-					emit(new MUL(new Reg(ai), new Reg(iter.get(0)), new Imm(m)));
-					emit(new MUL(new Reg(bj), new Reg(iter.get(1)), new Imm(k)));
-					emit(new MUL(new Reg(ci), new Reg(iter.get(0)), new Imm(k)));
+					emit(new MUL(new Reg(ai), new Reg(iter.get(0)), new Imm(m*4)));
+					emit(new MUL(new Reg(bj), new Reg(iter.get(1)), new Imm(k*4)));
+					emit(new MUL(new Reg(ci), new Reg(iter.get(0)), new Imm(k*4)));
 					emit(new MV(new Reg(aa), new Imm(dict.get(a))));
 					emit(new MV(new Reg(bb), new Imm(dict.get(b))));
 					emit(new MV(new Reg(cc), new Imm(dict.get(c))));
