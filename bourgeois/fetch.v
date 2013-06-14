@@ -102,19 +102,27 @@ module fetch(clk, pc, newpc);
               reg2 = inst[21:16];
               regin = reg1;
               regread = 1;
+              enable = 1;
+              $display("%b zhan:%g", regout, regout != 8'b01111111);
               while(regout!=8'b01111111)begin
+                $display("zhan2:%g", regout);
                 //to wait
               end
               va = regoutrf;
               regread = 0;
+              enable = 0;
               
               regin = reg2;
               regread = 1;
+              enable = 1;
+              $display("%b zhan:%g", regout, regout != 8'b01111111);
               while(regout!=8'b01111111)begin
+                $display("zhan2:%g", regout);
                 //to wait
               end
               vb = regoutrf;
               regread = 0;
+              enable = 0;
               $display("%g:%g %g:%g", reg1, va, reg2, vb);
               if(va > vb)begin
                 newpc = $unsigned($signed(newpc) + $signed(inst[27:0]));
