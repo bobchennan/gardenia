@@ -1,17 +1,17 @@
 `include "define.v"
 `include "instcache.v"
 
-module fetch(clk, pc, newpc);
+module fetch(clk);
   input clk;
-  input[`WORD_SIZE-1:0] pc;
-  output reg[`WORD_SIZE-1:0] newpc;
   wire[`BLOCK_SIZE-1:0] out;
-  reg finish;
-  integer idx;
+  reg unfinish;
   reg[`WORD_SIZE-1:0] inst;
-  wire miss;
+  wire hit;
   
-  instcache ins(.clk(clk), .in(newpc), .out(out), .miss(miss));
+  integer idx;
+  reg[`WORD_SIZE-1:0] newpc;
+  
+  instcache ins(.clk(clk), .in(newpc), .out(out), .hit(hit));
   
   reg[2:0] unit; // 000 - lw, 001 - sw, 010 - add, 011 - mul, 100 - mv
   reg[`REG_SIZE-1:0] reg1, reg2, reg3;
@@ -28,18 +28,16 @@ module fetch(clk, pc, newpc);
   reg signed[`WORD_SIZE-1:0] va, vb;
   
   initial begin
-    finish = 1;
+    unfinish = 1;
     idx = 992;
-    newpc = pc;
+    newpc = 0;
     enable = 0;
-    //$display("idx %b", idx);
+    $display("idx %b cache %b newpc %b", idx, hit, newpc);
   end
   
   always @(posedge clk)begin
-    if(miss)
-      #`CACHE_MISS_TIME finish = finish;
-    if(finish)begin
-      finish = 0;
+    if(hit === 1 && unfinish)begin
+      unfinish = 0;
       begin:loop
         while(1)begin
           inst = out >> idx;
@@ -54,9 +52,10 @@ module fetch(clk, pc, newpc);
                 hasimm = 1;
                 imm = inst[15:1];
                 enable = 1;
-                while(out2==0)begin
-                  //wait
-                end
+                if(out2==0)begin
+					unfinish = 1;
+					disable loop;
+				end
                 idx = idx - `WORD_SIZE;
                 enable = 0;
               end else begin
@@ -64,9 +63,10 @@ module fetch(clk, pc, newpc);
                 hasimm = 0;
                 reg3 = inst[15:10];
                 enable = 1;
-                while(out2==0)begin
-                  //wait
-                end
+                if(out2==0)begin
+					unfinish = 1;
+					disable loop;
+				end
                 idx = idx - `WORD_SIZE;
                 enable = 0;
               end
@@ -80,9 +80,10 @@ module fetch(clk, pc, newpc);
                 hasimm = 1;
                 imm = inst[15:1];
                 enable = 1;
-                while(out2==0)begin
-                  //wait
-                end
+                if(out2==0)begin
+					unfinish = 1;
+					disable loop;
+				end
                 idx = idx - `WORD_SIZE;
                 enable = 0;
               end else begin
@@ -90,9 +91,10 @@ module fetch(clk, pc, newpc);
                 hasimm = 0;
                 reg3 = inst[15:10];
                 enable = 1;
-                while(out2==0)begin
-                  //wait
-                end
+                if(out2==0)begin
+					unfinish = 1;
+					disable loop;
+				end
                 idx = idx - `WORD_SIZE;
                 enable = 0;
               end
@@ -103,11 +105,11 @@ module fetch(clk, pc, newpc);
               regin = reg1;
               regread = 1;
               enable = 1;
-              $display("%b zhan:%g", regout, regout != 8'b01111111);
-              while(regout!=8'b01111111)begin
-                $display("zhan2:%g", regout);
-                //to wait
-              end
+              if(regout!==8'b01111111)begin
+                $display("bgt not ready");
+				        unfinish = 1;
+				        disable loop;
+			        end
               va = regoutrf;
               regread = 0;
               enable = 0;
@@ -115,22 +117,22 @@ module fetch(clk, pc, newpc);
               regin = reg2;
               regread = 1;
               enable = 1;
-              $display("%b zhan:%g", regout, regout != 8'b01111111);
-              while(regout!=8'b01111111)begin
-                $display("zhan2:%g", regout);
-                //to wait
-              end
+              if(regout!==8'b01111111)begin
+                $display("bgt not ready");
+				        unfinish = 1;
+				        disable loop;
+			        end
               vb = regoutrf;
               regread = 0;
               enable = 0;
               $display("%g:%g %g:%g", reg1, va, reg2, vb);
               if(va > vb)begin
                 newpc = $unsigned($signed(newpc) + $signed(inst[27:0]));
-                if(miss)begin
-                  #`CACHE_MISS_TIME idx = 992;
-                end
-                else
-                  idx = 992;
+				idx = 992;
+				if(hit!==1)begin
+					unfinish = 1;
+					disable loop;
+				end
               end
               else
                 idx = idx - `WORD_SIZE;
@@ -147,9 +149,10 @@ module fetch(clk, pc, newpc);
                 hasimm = 1;
                 imm = inst[15:1];
                 enable = 1;
-                while(out2==0)begin
-                  //wait
-                end
+                if(out2==0)begin
+					unfinish = 1;
+					disable loop;
+				end
                 idx = idx - `WORD_SIZE;
                 enable = 0;
               end else begin
@@ -157,9 +160,10 @@ module fetch(clk, pc, newpc);
                 hasimm = 0;
                 reg3 = inst[15:10];
                 enable = 1;
-                while(out2==0)begin
-                  //wait
-                end
+                if(out2==0)begin
+					unfinish = 1;
+					disable loop;
+				end
                 idx = idx - `WORD_SIZE;
                 enable = 0;
               end
@@ -173,9 +177,10 @@ module fetch(clk, pc, newpc);
                 hasimm = 1;
                 imm = inst[15:1];
                 enable = 1;
-                while(out2==0)begin
-                  //wait
-                end
+                if(out2==0)begin
+					unfinish = 1;
+					disable loop;
+				end
                 idx = idx - `WORD_SIZE;
                 enable = 0;
               end else begin
@@ -183,20 +188,21 @@ module fetch(clk, pc, newpc);
                 hasimm = 0;
                 reg3 = inst[15:10];
                 enable = 1;
-                while(out2==0)begin
-                  //wait
-                end
+                if(out2==0)begin
+					unfinish = 1;
+					disable loop;
+				end
                 idx = idx - `WORD_SIZE;
                 enable = 0;
               end
             end
             4'b1110:begin
               newpc = $unsigned($signed(newpc) + $signed(inst[27:0]));
-              if(miss)begin
-                  #`CACHE_MISS_TIME idx = 992;
-                end
-                else
-                  idx = 992;
+              idx = 992;
+			  if(hit!==1)begin
+				unfinish = 1;
+			    disable loop;
+			  end
             end
             4'b1111:begin
               unit = 3'b100;
@@ -206,18 +212,20 @@ module fetch(clk, pc, newpc);
                 hasimm = 1;
                 imm = inst[21:0];
                 enable = 1;
-                while(out2==0)begin
-                  //wait
-                end
+                if(out2==0)begin
+					unfinish = 1;
+					disable loop;
+				end
                 idx = idx - `WORD_SIZE;
                 enable = 0;
               end else begin
                 hasimm = 0;
                 reg2 = inst[21:16];
                 enable = 1;
-                while(out2==0)begin
-                  //wait
-                end
+                if(out2==0)begin
+					unfinish = 1;
+					disable loop;
+				end
                 idx = idx - `WORD_SIZE;
                 enable = 0;
               end
@@ -227,24 +235,16 @@ module fetch(clk, pc, newpc);
               idx = idx - `WORD_SIZE;
               if(idx<0)begin
                 newpc=newpc+128;
-                if(miss)begin
-                  #`CACHE_MISS_TIME idx = 992;
-                end
-                else
-                  idx = 992;
+                idx = 992;
               end
-              finish = 1;
+              unfinish = 1;
               disable loop;
             end
             4'b0001:begin
               unit = 3'b101;
               enable = 1;
-              finish = 0;
+              unfinish = 0;
               $display("finish");
-              disable loop;
-            end
-            4'bxxxx:begin
-              finish = 0;
               disable loop;
             end
             default:begin
@@ -253,11 +253,11 @@ module fetch(clk, pc, newpc);
           endcase
           if(idx<0)begin
             newpc = newpc + 128;
-            if(miss)begin
-              #`CACHE_MISS_TIME idx = 992;
-            end
-            else
-              idx = 992;
+            idx = 992;
+			      if(hit!==1)begin
+				      unfinish = 1;
+				      disable loop;
+			      end
           end
         end
       end

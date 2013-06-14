@@ -15,6 +15,7 @@ module instmem(clk, in, readable, writable, write, out1, out2);
     for(i=0;i<`INST_MEM_SIZE;i=i+1)
       inst[i]=`BYTE_SIZE'b00000000;
     $readmemb("input.bin", inst);
+    //$display("mem finish");
   end
   
   always @(posedge clk) begin
@@ -29,6 +30,7 @@ module instmem(clk, in, readable, writable, write, out1, out2);
       out2 = 0;
       for (i = 0; i < `BLOCK_SIZE / `BYTE_SIZE; i = i + 1)
         out2 = (out2 << `BYTE_SIZE) + inst[(in >> 7 << 7) + `BLOCK_SIZE / `BYTE_SIZE + i];
+      //$display("%b %b %b", in, out1, out2);
     end
   end
 endmodule
