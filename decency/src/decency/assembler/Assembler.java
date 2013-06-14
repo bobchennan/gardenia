@@ -80,12 +80,12 @@ public class Assembler {
 
 	void gen(BGT ai) {
 		emit("1010" + ai.src1.gen() + ai.src2.gen()
-				+ Util.widen(labelTable.get(ai.label) - counter, 16));
+				+ Util.widen((labelTable.get(ai.label) - counter) * 4, 16));
 	}
 
 	void gen(BNEZ ai) {
 		emit("1011" + ai.src.gen()
-				+ Util.widen(labelTable.get(ai.label) - counter, 20));
+				+ Util.widen((labelTable.get(ai.label) - counter) * 4, 20));
 	}
 
 	void gen(LW ai) {
@@ -107,7 +107,7 @@ public class Assembler {
 	}
 
 	void gen(J ai) {
-		emit("1110" + Util.widen(labelTable.get(ai.label) - counter, 28));
+		emit("1110" + Util.widen((labelTable.get(ai.label) - counter) * 4, 28));
 	}
 
 	void gen(MV ai) {
