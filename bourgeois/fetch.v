@@ -50,12 +50,12 @@ module fetch(clk);
               if(inst[0:0]==1)begin
                 //imm
                 hasimm = 1;
-                imm = inst[15:1];
+                imm = $signed(inst[15:1]);
                 enable = 1;
                 if(out2==0)begin
-					unfinish = 1;
-					disable loop;
-				end
+                    unfinish = 1;
+                    disable loop;
+                end
                 idx = idx - `WORD_SIZE;
                 enable = 0;
               end else begin
@@ -64,9 +64,9 @@ module fetch(clk);
                 reg3 = inst[15:10];
                 enable = 1;
                 if(out2==0)begin
-					unfinish = 1;
-					disable loop;
-				end
+                    unfinish = 1;
+                    disable loop;
+                end
                 idx = idx - `WORD_SIZE;
                 enable = 0;
               end
@@ -78,12 +78,12 @@ module fetch(clk);
               if(inst[0:0]==1)begin
                 //imm
                 hasimm = 1;
-                imm = inst[15:1];
+                imm = $signed(inst[15:1]);
                 enable = 1;
                 if(out2==0)begin
-					unfinish = 1;
-					disable loop;
-				end
+                    unfinish = 1;
+                    disable loop;
+                end
                 idx = idx - `WORD_SIZE;
                 enable = 0;
               end else begin
@@ -92,9 +92,9 @@ module fetch(clk);
                 reg3 = inst[15:10];
                 enable = 1;
                 if(out2==0)begin
-					unfinish = 1;
-					disable loop;
-				end
+                    unfinish = 1;
+                    disable loop;
+                end
                 idx = idx - `WORD_SIZE;
                 enable = 0;
               end
@@ -107,9 +107,9 @@ module fetch(clk);
               enable = 1;
               if(regout!==8'b01111111)begin
                 $display("bgt not ready");
-				        unfinish = 1;
-				        disable loop;
-			        end
+                        unfinish = 1;
+                        disable loop;
+                    end
               va = regoutrf;
               regread = 0;
               enable = 0;
@@ -119,20 +119,20 @@ module fetch(clk);
               enable = 1;
               if(regout!==8'b01111111)begin
                 $display("bgt not ready");
-				        unfinish = 1;
-				        disable loop;
-			        end
+                        unfinish = 1;
+                        disable loop;
+                    end
               vb = regoutrf;
               regread = 0;
               enable = 0;
               $display("%g:%g %g:%g", reg1, va, reg2, vb);
               if(va > vb)begin
                 newpc = $unsigned($signed(newpc) + $signed(inst[27:0]));
-				idx = 992;
-				if(hit!==1)begin
-					unfinish = 1;
-					disable loop;
-				end
+                idx = 992;
+                if(hit!==1)begin
+                    unfinish = 1;
+                    disable loop;
+                end
               end
               else
                 idx = idx - `WORD_SIZE;
@@ -147,12 +147,12 @@ module fetch(clk);
               if(inst[0:0]==1)begin
                 //imm
                 hasimm = 1;
-                imm = inst[15:1];
+                imm = $signed(inst[15:1]);
                 enable = 1;
                 if(out2==0)begin
-					unfinish = 1;
-					disable loop;
-				end
+                    unfinish = 1;
+                    disable loop;
+                end
                 idx = idx - `WORD_SIZE;
                 enable = 0;
               end else begin
@@ -161,9 +161,9 @@ module fetch(clk);
                 reg3 = inst[15:10];
                 enable = 1;
                 if(out2==0)begin
-					unfinish = 1;
-					disable loop;
-				end
+                    unfinish = 1;
+                    disable loop;
+                end
                 idx = idx - `WORD_SIZE;
                 enable = 0;
               end
@@ -175,12 +175,12 @@ module fetch(clk);
               if(inst[0:0] == 1)begin
                 //imm
                 hasimm = 1;
-                imm = inst[15:1];
+                imm = $signed(inst[15:1]);
                 enable = 1;
                 if(out2==0)begin
-					unfinish = 1;
-					disable loop;
-				end
+                    unfinish = 1;
+                    disable loop;
+                end
                 idx = idx - `WORD_SIZE;
                 enable = 0;
               end else begin
@@ -189,9 +189,9 @@ module fetch(clk);
                 reg3 = inst[15:10];
                 enable = 1;
                 if(out2==0)begin
-					unfinish = 1;
-					disable loop;
-				end
+                    unfinish = 1;
+                    disable loop;
+                end
                 idx = idx - `WORD_SIZE;
                 enable = 0;
               end
@@ -199,10 +199,10 @@ module fetch(clk);
             4'b1110:begin
               newpc = $unsigned($signed(newpc) + $signed(inst[27:0]));
               idx = 992;
-			  if(hit!==1)begin
-				unfinish = 1;
-			    disable loop;
-			  end
+              if(hit!==1)begin
+                unfinish = 1;
+                disable loop;
+              end
             end
             4'b1111:begin
               unit = 3'b100;
@@ -210,12 +210,12 @@ module fetch(clk);
               if(inst[0:0] == 1)begin
                 //imm
                 hasimm = 1;
-                imm = inst[21:0];
+                imm = $signed(inst[21:0]);
                 enable = 1;
                 if(out2==0)begin
-					unfinish = 1;
-					disable loop;
-				end
+                    unfinish = 1;
+                    disable loop;
+                end
                 idx = idx - `WORD_SIZE;
                 enable = 0;
               end else begin
@@ -223,9 +223,9 @@ module fetch(clk);
                 reg2 = inst[21:16];
                 enable = 1;
                 if(out2==0)begin
-					unfinish = 1;
-					disable loop;
-				end
+                    unfinish = 1;
+                    disable loop;
+                end
                 idx = idx - `WORD_SIZE;
                 enable = 0;
               end
@@ -254,10 +254,10 @@ module fetch(clk);
           if(idx<0)begin
             newpc = newpc + 128;
             idx = 992;
-			      if(hit!==1)begin
-				      unfinish = 1;
-				      disable loop;
-			      end
+                  if(hit!==1)begin
+                      unfinish = 1;
+                      disable loop;
+                  end
           end
         end
       end
