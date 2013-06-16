@@ -197,7 +197,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
       rrswrite = cdb >> `WORD_SIZE;
       rrsinrf = cdb & ((1 << `WORD_SIZE) - 1);
       check = 1;
-      check = 0;
+      #0 check = 0;
     end
   end
   always @(regread) begin
@@ -215,7 +215,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
     over = 0;
   end
   always @(halt) begin
-    if (halt == 1) begin
+    while (halt == 1) begin
       over = 1;
       for (j = 0; j < 96 && over; j = j + 1)
         if (lw[j] >> (`GENERAL_RS_SIZE - 1) == 0) begin
@@ -239,6 +239,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
         end
       if (over == 1) begin
         flush = 1;
+        halt = 0;
       end else begin
         #1 over = 0;
       end
@@ -283,7 +284,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
         rrsr = reg1;
         rrswrite = i + 8'b10000000;
         rrswritable = 1;
-        rrswritable = 0;
+        #0 rrswritable = 0;
         out = 1;
       end
     end
@@ -361,7 +362,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
         rrsr = reg1;
         rrswrite = i + 8'b10100000;
         rrswritable = 1;
-        rrswritable = 0;
+        #0 rrswritable = 0;
         out = 1;
       end
     end
@@ -397,7 +398,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
         rrsr = reg1;
         rrswrite = i + 8'b11000000;
         rrswritable = 1;
-        rrswritable = 0;
+        #0 rrswritable = 0;
         out = 1;
       end
     end
@@ -419,7 +420,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
         rrswrite = 8'b01111111;
         rrsinrf = imm;
         rrswritable = 1;
-        rrswritable = 0;
+        #0 rrswritable = 0;
         out = 1;
       end
     end

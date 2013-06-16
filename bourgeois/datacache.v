@@ -62,7 +62,7 @@ module datacache(clk, in, readable, writable, write, out, miss, flush);
           cachein = Tag[index] << 6 + index << 4;
           cachewrite = Val[index];
           cachewritable = 1;
-          cachewritable = 0;
+          #0 cachewritable = 0;
         end
         cachein = in;
         cachereadable = 1;
@@ -86,7 +86,7 @@ module datacache(clk, in, readable, writable, write, out, miss, flush);
           cachein = Tag[index] << 6 + index << 4;
           cachewrite = Val[index];
           cachewritable = 1;
-          cachewritable = 0;
+          #0 cachewritable = 0;
           Dirty[index] = 0;
         end
         cachein = in;
@@ -110,7 +110,7 @@ module datacache(clk, in, readable, writable, write, out, miss, flush);
           cachein = Tag[i] << 6 + i << 4;
           cachewrite = Val[i];
           cachewritable = 1;
-          cachewritable = 0;
+          #0 cachewritable = 0;
           Dirty[i] = 0;
         end
       cacheflush = 1;
