@@ -1,4 +1,5 @@
 `include "clock.v"
+`include "RS.v"
 
 module test();
   wire clkout;
@@ -16,16 +17,17 @@ module test();
   wire signed[`WORD_SIZE-1:0] regoutrf;
   RS rs(.clk(clkout), .unit(unit), .reg1(reg1), .reg2(reg2), .reg3(reg3), .hasimm(hasimm), .imm(imm), .enable(enable), .out(out2), .regread(regread), .regin(regin), .regout(regout), .regoutrf(regoutrf));
   
-  reg signed[`WORD_SIZE-1:0] va, vb;
-  
   initial begin
-    $display("start");
+    unit = 5'b1000;
     enable = 0;
+    $display("initial");
   end
-   
-  always begin
-    $display("cnx");
-    $finish(2);
+  
+  always @(posedge clkout) begin
+    enable = 1;
+    #0 $display("posedge %b", unit);
+    enable = 0;
+    unit = unit + 1;
   end
   
 endmodule

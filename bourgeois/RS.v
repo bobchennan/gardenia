@@ -43,6 +43,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
         cdb = ((8'b00100000 + geni) << `WORD_SIZE) + $unsigned(addout);
         add[geni] = 0;
         cdbchange = 1;
+        $display("cdb change");
       end
     end
     always @(cdbchange) begin
@@ -248,6 +249,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
   reg[`GENERAL_RS_SIZE-1:0] tmp2;
   always @(enable) begin
     if (enable == 1) begin
+      $display("%b", unit);
     case (unit) 
       3'b000: begin // lw
       begin:loop1

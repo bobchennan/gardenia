@@ -36,6 +36,7 @@ module fetch(clk);
   end
   
   always @(posedge clk)begin
+    $display("posedge");
     if(hit === 1 && unfinish)begin
       unfinish = 0;
       begin:loop
@@ -52,7 +53,7 @@ module fetch(clk);
                 hasimm = 1;
                 imm = $signed(inst[15:1]);
                 enable = 1;
-                if(out2==0)begin
+                #0 if(out2==0)begin
                     unfinish = 1;
                     disable loop;
                 end
@@ -63,7 +64,7 @@ module fetch(clk);
                 hasimm = 0;
                 reg3 = inst[15:10];
                 enable = 1;
-                if(out2==0)begin
+                #0 if(out2==0)begin
                     unfinish = 1;
                     disable loop;
                 end
@@ -80,7 +81,7 @@ module fetch(clk);
                 hasimm = 1;
                 imm = $signed(inst[15:1]);
                 enable = 1;
-                if(out2==0)begin
+                #0 if(out2==0)begin
                     unfinish = 1;
                     disable loop;
                 end
@@ -91,7 +92,7 @@ module fetch(clk);
                 hasimm = 0;
                 reg3 = inst[15:10];
                 enable = 1;
-                if(out2==0)begin
+                #0 if(out2==0)begin
                     unfinish = 1;
                     disable loop;
                 end
@@ -105,7 +106,7 @@ module fetch(clk);
               regin = reg1;
               regread = 1;
               enable = 1;
-              if(regout!==8'b01111111)begin
+              #0 if(regout!==8'b01111111)begin
                 $display("bgt not ready");
                         unfinish = 1;
                         disable loop;
@@ -113,11 +114,10 @@ module fetch(clk);
               va = regoutrf;
               regread = 0;
               enable = 0;
-              
               regin = reg2;
               regread = 1;
               enable = 1;
-              if(regout!==8'b01111111)begin
+              #0 if(regout!==8'b01111111)begin
                 $display("bgt not ready");
                         unfinish = 1;
                         disable loop;
@@ -149,7 +149,7 @@ module fetch(clk);
                 hasimm = 1;
                 imm = $signed(inst[15:1]);
                 enable = 1;
-                if(out2==0)begin
+                #0 if(out2==0)begin
                     unfinish = 1;
                     disable loop;
                 end
@@ -160,7 +160,7 @@ module fetch(clk);
                 hasimm = 0;
                 reg3 = inst[15:10];
                 enable = 1;
-                if(out2==0)begin
+                #0 if(out2==0)begin
                     unfinish = 1;
                     disable loop;
                 end
@@ -177,7 +177,7 @@ module fetch(clk);
                 hasimm = 1;
                 imm = $signed(inst[15:1]);
                 enable = 1;
-                if(out2==0)begin
+                #0 if(out2==0)begin
                     unfinish = 1;
                     disable loop;
                 end
@@ -188,7 +188,7 @@ module fetch(clk);
                 hasimm = 0;
                 reg3 = inst[15:10];
                 enable = 1;
-                if(out2==0)begin
+                #0 if(out2==0)begin
                     unfinish = 1;
                     disable loop;
                 end
@@ -212,7 +212,7 @@ module fetch(clk);
                 hasimm = 1;
                 imm = $signed(inst[21:0]);
                 enable = 1;
-                if(out2==0)begin
+                #0 if(out2==0)begin
                     unfinish = 1;
                     disable loop;
                 end
@@ -222,7 +222,7 @@ module fetch(clk);
                 hasimm = 0;
                 reg2 = inst[21:16];
                 enable = 1;
-                if(out2==0)begin
+                #0 if(out2==0)begin
                     unfinish = 1;
                     disable loop;
                 end
@@ -243,7 +243,7 @@ module fetch(clk);
             4'b0001:begin
               unit = 3'b101;
               enable = 1;
-              unfinish = 0;
+              #0 unfinish = 0;
               $display("finish");
               disable loop;
             end
