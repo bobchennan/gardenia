@@ -212,7 +212,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
   always @(regread) begin
     if (regread == 1) begin
       rrsr = regin;
-      regout = rrsout;
+      #0 regout = rrsout;
       regoutrf = rrsoutrf;
     end
   end
