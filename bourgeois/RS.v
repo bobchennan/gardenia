@@ -26,8 +26,17 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
   reg[`SW_RS_SIZE-1:0] sw[0:32-1];
   reg[`UNIT_SIZE + `WORD_SIZE:0 - 1] cdb;
   reg cdbchange;
+  integer k;
   initial begin
     cdbchange = 0;
+    for (k = 0; k < 32; k = k + 1)
+      add[k] = 0;
+    for (k = 0; k < 32; k = k + 1)
+      mul[k] = 0;
+    for (k = 0; k < 96; k = k + 1)
+      lw[k] = 0;
+    for (k = 0; k < 32; k = k + 1)
+      sw[k] = 0;
   end
   
   genvar geni;
@@ -261,6 +270,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
       if (i >= 96) 
         out = 0; // full
       else begin 
+        $display("put lw %b", i);
         if (hasimm == 0) begin
           lw[i] = ((2'b10 << 32 << 32 << 8) + reg2 << 8) + reg3 << 2;
           rrsr = reg2;
@@ -297,6 +307,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
       if (i >= 32) 
         out = 0; // full
       else begin
+                $display("put sw %b", i);
         if (hasimm == 0) begin
           sw[i] = (((2'b10 << 32 << 32 << 32 << 8) + reg1 << 8) + reg2 << 8) + reg3 << 3;
           rrsr = reg1;
@@ -339,6 +350,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
       if (i >= 32) 
         out = 0; // full
       else begin
+                $display("put add %b", i);
         if (hasimm == 0) begin
           add[i] = ((2'b10 << 32 << 32 << 8) + reg2 << 8) + reg3 << 2;
           rrsr = reg2;
@@ -372,9 +384,12 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
         if (mul[i] >> (`GENERAL_RS_SIZE - 1) == 0) 
           disable loop4;
       end
-      if (i >= 32)
+      if (i >= 32) begin
         out = 0; // full
+        $display("mul full");
+      end
       else begin 
+                $display("put mul %b", i);
         if (hasimm == 0) begin
           mul[i] = ((2'b10 << 32 << 32 << 8) + reg2 << 8) + reg3 << 2;
           rrsr = reg2;
@@ -412,11 +427,13 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
         if (i >= 32) 
           out = 0; // full
         else begin
+                  $display("put mv(add) %b", i);
           add[i] = ((2'b10 << 32 << 32) + reg2 << 8 << 2) + 1'b1;
           out = 1;
         end
       end else begin
         rrsr = reg1;
+        $display("imm mv reg1: %g", reg1);
         rrswrite = 8'b01111111;
         rrsinrf = imm;
         rrswritable = 1;

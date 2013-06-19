@@ -105,26 +105,28 @@ module fetch(clk);
               reg2 = inst[21:16];
               regin = reg1;
               regread = 1;
-              enable = 1;
+              //enable = 1;
               #0 if(regout!==8'b01111111)begin
-                $display("bgt not ready");
+                $display("bgt not ready, %b", regout);
                         unfinish = 1;
                         disable loop;
                     end
               va = regoutrf;
+              $display("reg1: %g, va : %g", reg1, va);
               regread = 0;
-              enable = 0;
-              regin = reg2;
+              //enable = 0;
+              #0 regin = reg2;
               regread = 1;
-              enable = 1;
+              //enable = 1;
               #0 if(regout!==8'b01111111)begin
-                $display("bgt not ready");
+                $display("bgt not ready, %b", regout);
                         unfinish = 1;
                         disable loop;
                     end
               vb = regoutrf;
+              $display("reg2: %g, vb : %g", reg2, vb);
               regread = 0;
-              enable = 0;
+              //enable = 0;
               $display("%g:%g %g:%g", reg1, va, reg2, vb);
               if(va > vb)begin
                 newpc = $unsigned($signed(newpc) + $signed(inst[27:0]));
@@ -210,7 +212,7 @@ module fetch(clk);
               if(inst[0:0] == 1)begin
                 //imm
                 hasimm = 1;
-                imm = $signed(inst[21:0]);
+                imm = $signed(inst[21:1]);
                 enable = 1;
                 #0 if(out2==0)begin
                     unfinish = 1;

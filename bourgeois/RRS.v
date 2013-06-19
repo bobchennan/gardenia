@@ -16,7 +16,7 @@ module RRS(clk, r, writable, write, inrf, out, outrf, check);
   initial begin
     for (i = 0; i < 64; i = i + 1) begin
       rrs[i] = 8'b01111111;
-      rrs[i] = 0;
+      rf[i] = 0;
     end
   end
   
@@ -34,6 +34,7 @@ module RRS(clk, r, writable, write, inrf, out, outrf, check);
       rrs[r] = write;
       if (write == 8'b01111111) 
         rf[r] = inrf;
+      $display("rrs write:%b %b %b", r, rrs[r], rf[r]);
 	  end
 	  out = rrs[r];
     outrf = rf[r];
@@ -41,5 +42,6 @@ module RRS(clk, r, writable, write, inrf, out, outrf, check);
 	always @(r) begin
     out = rrs[r];
     outrf = rf[r];
+    $display("rrs:%b %b %b", r, out, outrf);
   end
 endmodule
