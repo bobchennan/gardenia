@@ -1,7 +1,6 @@
 `include "define.v"
 `include "ALU.v"
 `include "datacache.v"
-`include "RRS.v"
 
 module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin, regout, regoutrf);
   input clk;
@@ -13,9 +12,13 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
   output reg out;
   input regread;
   input[`REG_SIZE-1:0] regin;
-  output reg[`UNIT_SIZE-1:0] regout;
-  output reg signed[`WORD_SIZE-1:0] regoutrf;
-    
+  output [`UNIT_SIZE-1:0] regout;
+  output signed[`WORD_SIZE-1:0] regoutrf;
+  
+  integer k;
+  
+
+   
   //unit code
   //lw : 10000000 - 11011111
   //sw : 00000000 - 00011111
@@ -26,7 +29,6 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
   reg[`SW_RS_SIZE-1:0] sw[0:32-1];
   reg[`UNIT_SIZE + `WORD_SIZE:0 - 1] cdb;
   reg cdbchange;
-  integer k;
   initial begin
     cdbchange = 0;
     for (k = 0; k < 32; k = k + 1)
@@ -189,31 +191,25 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
   endgenerate
   
   //Register Result Status
-  reg[5:0] rrsr; // 64 registers
-  reg rrswritable; // write(1) or read(0)
-  reg[`UNIT_SIZE-1:0] rrswrite;
-  reg signed[`WORD_SIZE-1:0] rrsinrf;
-  wire[`UNIT_SIZE-1:0] rrsout; // which unit is using this register
-  wire signed[`WORD_SIZE-1:0] rrsoutrf;
-  reg check;
-  RRS rrs(clk, rrsr, rrswritable, rrswrite, rrsinrf, rrsout, rrsoutrf, check);
+  reg[`UNIT_SIZE-1:0] rrs[63:0];
+  reg[`WORD_SIZE-1:0] rf[63:0];
+  assign regout = rrs[regin];
+  assign regoutrf = rf[regin];
   initial begin
-    rrswritable = 0;
-    check = 0;
+    for (k = 0; k < 64; k = k + 1) begin
+      rrs[k] = 8'b01111111;
+      rf[k] = 0;
+    end
   end
+  reg[`UNIT_SIZE-1:0] rrswrite;
   always @(cdbchange) begin
     if (cdbchange) begin
       rrswrite = cdb >> `WORD_SIZE;
-      rrsinrf = cdb & ((1 << `WORD_SIZE) - 1);
-      check = 1;
-      #0 check = 0;
-    end
-  end
-  always @(regread) begin
-    if (regread == 1) begin
-      rrsr = regin;
-      #0 regout = rrsout;
-      regoutrf = rrsoutrf;
+      for (k = 0; k < 64; k = k + 1) 
+        if (rrs[k] == rrswrite) begin
+          rrs[k] = 8'b01111111;
+          rf[k] = cdb & ((1 << `WORD_SIZE) - 1);
+        end
     end
   end
   
@@ -273,28 +269,22 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
         $display("put lw %b", i);
         if (hasimm == 0) begin
           lw[i] = ((2'b10 << 32 << 32 << 8) + reg2 << 8) + reg3 << 2;
-          rrsr = reg2;
-          if (rrsout == 8'b01111111) begin
+          if (rrs[reg2] == 8'b01111111) begin
             tmp2 = lw[i] & ((1 << 50) - 1);
-            lw[i] = (((lw[i] >> 82 << 32) + rrsoutrf << 50) + tmp2) | 2'b10;
+            lw[i] = (((lw[i] >> 82 << 32) + rf[reg2] << 50) + tmp2) | 2'b10;
           end
-          rrsr = reg3;
-          if (rrsout == 8'b01111111) begin
+          if (rrs[reg3] == 8'b01111111) begin
             tmp2 = lw[i] & ((1 << 18) - 1);
-            lw[i] = (((lw[i] >> 50 << 32) + rrsoutrf << 18) + tmp2) | 2'b01;
+            lw[i] = (((lw[i] >> 50 << 32) + rf[reg3] << 18) + tmp2) | 2'b01;
           end
         end else begin
           lw[i] = (((2'b10 << 32 << 32) + $unsigned(imm) << 8) + reg2 << 8 << 2) + 1'b1;
-          rrsr = reg2;
-          if (rrsout == 8'b01111111) begin
+          if (rrs[reg2] == 8'b01111111) begin
             tmp2 = lw[i] & ((1 << 50) - 1);
-            lw[i] = (((lw[i] >> 82 << 32) + rrsoutrf << 50) + tmp2) | 2'b10;
+            lw[i] = (((lw[i] >> 82 << 32) + rf[reg2] << 50) + tmp2) | 2'b10;
           end
         end
-        rrsr = reg1;
-        rrswrite = i + 8'b10000000;
-        rrswritable = 1;
-        #0 rrswritable = 0;
+        rrs[reg1] = i + 8'b10000000;
         out = 1;
       end
     end
@@ -310,32 +300,27 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
                 $display("put sw %b", i);
         if (hasimm == 0) begin
           sw[i] = (((2'b10 << 32 << 32 << 32 << 8) + reg1 << 8) + reg2 << 8) + reg3 << 3;
-          rrsr = reg1;
-          if (rrsout == 8'b01111111) begin
+          if (rrs[reg1] == 8'b01111111) begin
             tmp2 = sw[i] & ((1 << 91) - 1);
-            sw[i] = (((sw[i] >> 123 << 32) + rrsoutrf << 91) + tmp2) | 3'b100;
+            sw[i] = (((sw[i] >> 123 << 32) + rf[reg1] << 91) + tmp2) | 3'b100;
           end
-          rrsr = reg2;
-          if (rrsout == 8'b01111111) begin
+          if (rrs[reg2] == 8'b01111111) begin
             tmp2 = sw[i] & ((1 << 59) - 1);
-            sw[i] = (((sw[i] >> 91 << 32) + rrsoutrf << 59) + tmp2) | 3'b010;
+            sw[i] = (((sw[i] >> 91 << 32) + rf[reg2] << 59) + tmp2) | 3'b010;
           end
-          rrsr = reg3;
-          if (rrsout == 8'b01111111) begin
+          if (rrs[reg3] == 8'b01111111) begin
             tmp2 = sw[i] & ((1 << 27) - 1);
-            sw[i] = (((sw[i] >> 59 << 32) + rrsoutrf << 27) + tmp2) | 2'b01;
+            sw[i] = (((sw[i] >> 59 << 32) + rf[reg3] << 27) + tmp2) | 2'b01;
           end
         end else begin
           sw[i] = ((((2'b10 << 32 << 32 << 32) + $unsigned(imm) << 8) + reg1 << 8) + reg2 << 8 << 3) + 1'b1;
-          rrsr = reg1;
-          if (rrsout == 8'b01111111) begin
+          if (rrs[reg1] == 8'b01111111) begin
             tmp2 = sw[i] & ((1 << 91) - 1);
-            sw[i] = (((sw[i] >> 123 << 32) + rrsoutrf << 91) + tmp2) | 3'b100;
+            sw[i] = (((sw[i] >> 123 << 32) + rf[reg1] << 91) + tmp2) | 3'b100;
           end
-          rrsr = reg2;
-          if (rrsout == 8'b01111111) begin
+          if (rrs[reg2] == 8'b01111111) begin
             tmp2 = sw[i] & ((1 << 59) - 1);
-            sw[i] = (((sw[i] >> 91 << 32) + rrsoutrf << 59) + tmp2) | 3'b010;
+            sw[i] = (((sw[i] >> 91 << 32) + rf[reg2] << 59) + tmp2) | 3'b010;
           end
         end
         out = 1;
@@ -353,28 +338,22 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
                 $display("put add %b", i);
         if (hasimm == 0) begin
           add[i] = ((2'b10 << 32 << 32 << 8) + reg2 << 8) + reg3 << 2;
-          rrsr = reg2;
-          if (rrsout == 8'b01111111) begin
+          if (rrs[reg2] == 8'b01111111) begin
             tmp2 = add[i] & ((1 << 50) - 1);
-            add[i] = (((add[i] >> 82 << 32) + rrsoutrf << 50) + tmp2) | 2'b10;
+            add[i] = (((add[i] >> 82 << 32) + rf[reg2] << 50) + tmp2) | 2'b10;
           end
-          rrsr = reg3;
-          if (rrsout == 8'b01111111) begin
+          if (rrs[reg3] == 8'b01111111) begin
             tmp2 = add[i] & ((1 << 18) - 1);
-            add[i] = (((add[i] >> 50 << 32) + rrsoutrf << 18) + tmp2) | 2'b01;
+            add[i] = (((add[i] >> 50 << 32) + rf[reg3] << 18) + tmp2) | 2'b01;
           end
         end else begin
           add[i] = (((2'b10 << 32 << 32) + $unsigned(imm) << 8) + reg2 << 8 << 2) + 1'b1;
-          rrsr = reg2;
-          if (rrsout == 8'b01111111) begin
+          if (rrs[reg2] == 8'b01111111) begin
             tmp2 = add[i] & ((1 << 50) - 1);
-            add[i] = (((add[i] >> 82 << 32) + rrsoutrf << 50) + tmp2) | 2'b10;
+            add[i] = (((add[i] >> 82 << 32) + rf[reg2] << 50) + tmp2) | 2'b10;
           end
         end
-        rrsr = reg1;
-        rrswrite = i + 8'b10100000;
-        rrswritable = 1;
-        #0 rrswritable = 0;
+        rrs[reg1] = i + 8'b10100000;
         out = 1;
       end
     end
@@ -392,28 +371,22 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
                 $display("put mul %b", i);
         if (hasimm == 0) begin
           mul[i] = ((2'b10 << 32 << 32 << 8) + reg2 << 8) + reg3 << 2;
-          rrsr = reg2;
-          if (rrsout == 8'b01111111) begin
+          if (rrs[reg2] == 8'b01111111) begin
             tmp2 = mul[i] & ((1 << 50) - 1);
-            mul[i] = (((mul[i] >> 82 << 32) + rrsoutrf << 50) + tmp2) | 2'b10;
+            mul[i] = (((mul[i] >> 82 << 32) + rf[reg2] << 50) + tmp2) | 2'b10;
           end
-          rrsr = reg3;
-          if (rrsout == 8'b01111111) begin
+          if (rrs[reg3] == 8'b01111111) begin
             tmp2 = mul[i] & ((1 << 18) - 1);
-            mul[i] = (((mul[i] >> 50 << 32) + rrsoutrf << 18) + tmp2) | 2'b01;
+            mul[i] = (((mul[i] >> 50 << 32) + rf[reg3] << 18) + tmp2) | 2'b01;
           end
         end else begin
           mul[i] = (((2'b10 << 32 << 32) + $unsigned(imm) << 8) + reg2 << 8 << 2) + 1'b1;
-          rrsr = reg2;
-          if (rrsout == 8'b01111111) begin
+          if (rrs[reg2] == 8'b01111111) begin
             tmp2 = mul[i] & ((1 << 50) - 1);
-            mul[i] = (((mul[i] >> 82 << 32) + rrsoutrf << 50) + tmp2) | 2'b10;
+            mul[i] = (((mul[i] >> 82 << 32) + rf[reg2] << 50) + tmp2) | 2'b10;
           end
         end
-        rrsr = reg1;
-        rrswrite = i + 8'b11000000;
-        rrswritable = 1;
-        #0 rrswritable = 0;
+        rrs[reg1] = i + 8'b11000000;
         out = 1;
       end
     end
@@ -432,12 +405,9 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
           out = 1;
         end
       end else begin
-        rrsr = reg1;
         $display("imm mv reg1: %g", reg1);
-        rrswrite = 8'b01111111;
-        rrsinrf = imm;
-        rrswritable = 1;
-        #0 rrswritable = 0;
+        rrs[reg1] = 8'b01111111;
+        rf[reg1] = imm;
         out = 1;
       end
     end
