@@ -52,7 +52,7 @@ module fetch(clk);
                 //imm
                 hasimm = 1;
                 imm = $signed(inst[15:1]);
-                enable = 1;
+                #0 enable = 1;
                 #0 if(out2==0)begin
                     unfinish = 1;
                     disable loop;
@@ -63,7 +63,7 @@ module fetch(clk);
                 //reg
                 hasimm = 0;
                 reg3 = inst[15:10];
-                enable = 1;
+                #0 enable = 1;
                 #0 if(out2==0)begin
                     unfinish = 1;
                     disable loop;
@@ -76,11 +76,12 @@ module fetch(clk);
               unit = 3'b011;
               reg1 = inst[27:22];
               reg2 = inst[21:16];
+              $display("begin mul %b", inst);
               if(inst[0:0]==1)begin
                 //imm
                 hasimm = 1;
                 imm = $signed(inst[15:1]);
-                enable = 1;
+                #0 enable = 1;
                 #0 if(out2==0)begin
                     unfinish = 1;
                     disable loop;
@@ -91,7 +92,7 @@ module fetch(clk);
                 //reg
                 hasimm = 0;
                 reg3 = inst[15:10];
-                enable = 1;
+                #0 enable = 1;
                 #0 if(out2==0)begin
                     unfinish = 1;
                     disable loop;
@@ -99,6 +100,7 @@ module fetch(clk);
                 idx = idx - `WORD_SIZE;
                 enable = 0;
               end
+              $display("end mul");
             end
             4'b1010:begin
               reg1 = inst[27:22];
@@ -115,7 +117,7 @@ module fetch(clk);
               $display("reg1: %g, va : %g", reg1, va);
               regread = 0;
               //enable = 0;
-              #0 regin = reg2;
+              regin = reg2;
               regread = 1;
               //enable = 1;
               #0 if(regout!==8'b01111111)begin
@@ -150,7 +152,7 @@ module fetch(clk);
                 //imm
                 hasimm = 1;
                 imm = $signed(inst[15:1]);
-                enable = 1;
+                #0 enable = 1;
                 #0 if(out2==0)begin
                     unfinish = 1;
                     disable loop;
@@ -161,7 +163,7 @@ module fetch(clk);
                 //reg
                 hasimm = 0;
                 reg3 = inst[15:10];
-                enable = 1;
+                #0 enable = 1;
                 #0 if(out2==0)begin
                     unfinish = 1;
                     disable loop;
@@ -178,7 +180,7 @@ module fetch(clk);
                 //imm
                 hasimm = 1;
                 imm = $signed(inst[15:1]);
-                enable = 1;
+                #0 enable = 1;
                 #0 if(out2==0)begin
                     unfinish = 1;
                     disable loop;
@@ -189,7 +191,7 @@ module fetch(clk);
                 //reg
                 hasimm = 0;
                 reg3 = inst[15:10];
-                enable = 1;
+                #0 enable = 1;
                 #0 if(out2==0)begin
                     unfinish = 1;
                     disable loop;
@@ -214,7 +216,7 @@ module fetch(clk);
                 hasimm = 1;
                 imm = $signed(inst[21:1]);
                 $display("cnx %g:%g", reg1, imm);
-                enable = 1;
+                #0 enable = 1;
                 #0 if(out2==0)begin
                     unfinish = 1;
                     disable loop;
@@ -224,7 +226,7 @@ module fetch(clk);
               end else begin
                 hasimm = 0;
                 reg2 = inst[21:16];
-                enable = 1;
+                #0 enable = 1;
                 #0 if(out2==0)begin
                     unfinish = 1;
                     disable loop;
@@ -245,7 +247,7 @@ module fetch(clk);
             end
             4'b0001:begin
               unit = 3'b101;
-              enable = 1;
+              #0 enable = 1;
               #0 unfinish = 0;
               $display("finish");
               disable loop;
