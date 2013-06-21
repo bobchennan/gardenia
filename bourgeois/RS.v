@@ -193,9 +193,9 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
   reg readable, writable;
   reg[`WORD_SIZE-1:0] write;
   wire[`WORD_SIZE-1:0] cacheout;
-  wire miss;
+  wire hit;
   reg flush;
-  datacache data(clk, cachein, readable, writable, write, cacheout, miss, flush);
+  datacache data(clk, cachein, readable, writable, write, cacheout, hit, flush);
   initial begin
     flush = 0;
     readable = 0;
@@ -210,16 +210,18 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
     wire[`WORD_SIZE-1:0] addres; // add result
     integer l;
     ADD addd(addres, $signed(tmp[81:50]), $signed(tmp[49:18]));
-    always @(posedge clk) begin // need condition
+    always @(posedge clk) begin:lwblock // need condition
       if (tmp[`GENERAL_RS_SIZE-1:`GENERAL_RS_SIZE-1] == 1)
         $display("lw status %b:%b", geni, tmp);
       if (tmp[1:1] == 1'b1 && tmp[0:0] == 1'b1) begin
         cachein = addres;
         readable = 1;
-        #0 if (miss == 1) begin
-          #(`CACHE_MISS_TIME+2) lwout = cacheout;
+        #0 if (hit !== 1 || cachein !== addres) begin
+          readable = 0;
+          disable lwblock;
         end else
           lwout = cacheout;
+        //$display("RS get %g-%g:%b", cachein, addres, lwout);
         readable = 0;
         for (l = 0; l < 32; l = l + 1) 
           if (add[l] >> (`GENERAL_RS_SIZE - 1) == 1) begin
@@ -288,14 +290,15 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
     assign tmp = sw[geni];
     wire[`WORD_SIZE-1:0] addres;
     ADD addd(addres, $signed(tmp[90:59]), $signed(tmp[58:27]));
-    always @(posedge clk) begin // need condition
+    always @(posedge clk) begin:swblock // need condition
       if (tmp[2:2] == 1'b1 && tmp[1:1] == 1'b1 && tmp[0:0] == 1'b1) begin
         write = tmp[122:91];
-        $display("write %g: %b from %b", addres, write, tmp);
+        //$display("write %g: %b from %b", addres, write, tmp);
         cachein = addres;
         writable = 1;
-        #0 if (miss == 1) begin
-          #`CACHE_MISS_TIME writable = 0;
+        #0 if (hit !== 1 || cachein !== addres) begin
+          writable = 0;
+          disable swblock;
         end else
           writable = 0;
         sw[geni] = 0;
