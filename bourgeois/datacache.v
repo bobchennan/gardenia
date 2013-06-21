@@ -47,7 +47,7 @@ module datacache(clk, in, readable, writable, write, out, miss, flush);
   end
   
   reg[`BLOCK_SIZE-1:0] tmp;
-  always @(posedge clk) begin:czp
+  always @(writable) begin:czp
     //$display("aa %b %b %b, %b", in, readable, out, Val[index]);
     if (writable == 1) begin
       if (hit == 1) begin 
@@ -77,7 +77,9 @@ module datacache(clk, in, readable, writable, write, out, miss, flush);
         Dirty[index] = 1;
       end
     end
-    if ((readable == 1) || (writable == 1)) begin
+  end
+  always @(readable) begin
+    if (readable == 1) begin
       if (hit == 1) begin
           out = (Val[index] >> (`BLOCK_SIZE - offset * `BYTE_SIZE - `WORD_SIZE)) & 32'b11111111_11111111_11111111_11111111;
       end else begin

@@ -113,6 +113,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
             rf[l] = addout;
           end
         add[geni] = 0;
+        $display("add over: %b", geni);
       end
     end
   end
@@ -182,6 +183,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
             rf[l] = mulout;
           end
         mul[geni] = 0;
+                $display("mul over: %b", geni);
       end
     end
   end
@@ -196,6 +198,8 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
   datacache data(clk, cachein, readable, writable, write, cacheout, miss, flush);
   initial begin
     flush = 0;
+    readable = 0;
+    writable = 0;
   end
   //ALU for lw
   generate for (geni = 0; geni < 96; geni = geni + 1) begin:czplw
@@ -210,11 +214,11 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
       if (tmp[1:1] == 1'b1 && tmp[0:0] == 1'b1) begin
         cachein = addres;
         readable = 1;
-        if (miss == 1) begin
+        #0 if (miss == 1) begin
           #`CACHE_MISS_TIME lwout = cacheout;
         end else
           lwout = cacheout;
-          
+        readable = 0;
         for (l = 0; l < 32; l = l + 1) 
           if (add[l] >> (`GENERAL_RS_SIZE - 1) == 1) begin
             if (8'b10000000 + geni == (add[l] >> 10) & 8'b11111111 && (add[l] >> 1) & 1'b1 == 0) begin
@@ -267,8 +271,10 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
           if (rrs[l] == 8'b10000000 + geni) begin
             rrs[l] = 8'b01111111;
             rf[l] = lwout;
+            $display("lw to register %b: %b %b", l, lwout, cacheout);
           end        
         lw[geni] = 0;
+                $display("lw over: %b", geni);
       end
     end
   end
@@ -286,11 +292,12 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
         write = tmp[113:82];
         cachein = addres;
         writable = 1;
-        if (miss == 1) begin
+        #0 if (miss == 1) begin
           #`CACHE_MISS_TIME writable = 0;
         end else
           writable = 0;
         sw[geni] = 0;
+                $display("sw over: %b", geni);
       end
     end
   end
@@ -471,7 +478,6 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
             mul[i] = (((mul[i] >> 82 << 32) + rf[reg2] << 50) + tmp2) | 2'b10;
           end
         end
-        $display("put2 mul %b", mul[i]);
         rrs[reg1] = i + 8'b01000000;
         out = 1;
       end
