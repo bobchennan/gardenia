@@ -166,7 +166,7 @@ public class Main {
 						}
 						emit(new NOP());
 						for (int j = i * K; j < (i + 1) * K && j < k; ++j) {
-							int idx = j - i * K + reguse + K;
+							int idx = j - i * K + reguse;
 							emit(new SW(new Reg(idx), new Reg(cc), new Imm(
 									j * 4)));
 						}

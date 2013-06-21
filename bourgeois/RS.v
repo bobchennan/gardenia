@@ -73,7 +73,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
         for (l = 0; l < 32; l = l + 1) 
           if (mul[l] >> (`GENERAL_RS_SIZE - 1) == 1) begin
             if (8'b00100000 + geni == ((mul[l] >> 10) & 8'b11111111) && ((mul[l] >> 1) & 1'b1) == 0) begin
-              tmp2 = add[l] & ((1 << 50) - 1);
+              tmp2 = mul[l] & ((1 << 50) - 1);
               mul[l] = (((mul[l] >> 82 << 32) + $unsigned(addout) << 50) + tmp2) | 2'b10;
             end
             if (8'b00100000 + geni == ((mul[l] >> 2) & 8'b11111111) && (mul[l] & 1'b1) == 0) begin
@@ -98,11 +98,11 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
               tmp2 = sw[l] & ((1 << 91) - 1);
               sw[l] = (((sw[l] >> 123 << 32) + $unsigned(addout) << 91) + tmp2) | 3'b100;
             end
-            if (8'b00100000 + geni == ((sw[l] >> 11) & 8'b11111111) && ((tmp >> 1) & 1'b1) == 0) begin
+            if (8'b00100000 + geni == ((sw[l] >> 11) & 8'b11111111) && ((sw[l] >> 1) & 1'b1) == 0) begin
               tmp2 = sw[l] & ((1 << 59) - 1);
               sw[l] = (((sw[l] >> 91 << 32) + $unsigned(addout) << 59) + tmp2) | 3'b010;
             end
-            if (8'b00100000 + geni == ((tmp >> 3) & 8'b11111111) && (tmp & 1'b1) == 0) begin
+            if (8'b00100000 + geni == ((sw[l] >> 3) & 8'b11111111) && (sw[l] & 1'b1) == 0) begin
               tmp2 = sw[l] & ((1 << 27) - 1);
               sw[l] = (((sw[l] >> 59 << 32) + $unsigned(addout) << 27) + tmp2) | 3'b001;
             end
@@ -111,9 +111,9 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
           if (rrs[l] == 8'b00100000 + geni) begin
             rrs[l] = 8'b01111111;
             rf[l] = addout;
+            $display("add over %g:%b", l, addout);
           end
         add[geni] = 0;
-        $display("add over: %b", geni);
       end
     end
   end
@@ -143,7 +143,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
         for (l = 0; l < 32; l = l + 1) 
           if (mul[l] >> (`GENERAL_RS_SIZE - 1) == 1) begin
             if (8'b01000000 + geni == ((mul[l] >> 10) & 8'b11111111) && ((mul[l] >> 1) & 1'b1) == 0) begin
-              tmp2 = add[l] & ((1 << 50) - 1);
+              tmp2 = mul[l] & ((1 << 50) - 1);
               mul[l] = (((mul[l] >> 82 << 32) + $unsigned(mulout) << 50) + tmp2) | 2'b10;
             end
             if (8'b01000000 + geni == ((mul[l] >> 2) & 8'b11111111) && (mul[l] & 1'b1) == 0) begin
@@ -168,11 +168,11 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
               tmp2 = sw[l] & ((1 << 91) - 1);
               sw[l] = (((sw[l] >> 123 << 32) + $unsigned(mulout) << 91) + tmp2) | 3'b100;
             end
-            if (8'b01000000 + geni == ((sw[l] >> 11) & 8'b11111111) && ((tmp >> 1) & 1'b1) == 0) begin
+            if (8'b01000000 + geni == ((sw[l] >> 11) & 8'b11111111) && ((sw[l] >> 1) & 1'b1) == 0) begin
               tmp2 = sw[l] & ((1 << 59) - 1);
               sw[l] = (((sw[l] >> 91 << 32) + $unsigned(mulout) << 59) + tmp2) | 3'b010;
             end
-            if (8'b01000000 + geni == ((tmp >> 3) & 8'b11111111) && (tmp & 1'b1) == 0) begin
+            if (8'b01000000 + geni == ((sw[l] >> 3) & 8'b11111111) && (sw[l] & 1'b1) == 0) begin
               tmp2 = sw[l] & ((1 << 27) - 1);
               sw[l] = (((sw[l] >> 59 << 32) + $unsigned(mulout) << 27) + tmp2) | 3'b001;
             end
@@ -181,9 +181,9 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
           if (rrs[l] == 8'b01000000 + geni) begin
             rrs[l] = 8'b01111111;
             rf[l] = mulout;
+            $display("mul over %g:%b", l, mulout);
           end
         mul[geni] = 0;
-                $display("mul over: %b", geni);
       end
     end
   end
@@ -235,7 +235,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
         for (l = 0; l < 32; l = l + 1) 
           if (mul[l] >> (`GENERAL_RS_SIZE - 1) == 1) begin
             if (8'b10000000 + geni == ((mul[l] >> 10) & 8'b11111111) && ((mul[l] >> 1) & 1'b1) == 0) begin
-              tmp2 = add[l] & ((1 << 50) - 1);
+              tmp2 = mul[l] & ((1 << 50) - 1);
               mul[l] = (((mul[l] >> 82 << 32) + $unsigned(lwout) << 50) + tmp2) | 2'b10;
             end
             if (8'b10000000 + geni == ((mul[l] >> 2) & 8'b11111111) && (mul[l] & 1'b1) == 0) begin
@@ -260,11 +260,11 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
               tmp2 = sw[l] & ((1 << 91) - 1);
               sw[l] = (((sw[l] >> 123 << 32) + $unsigned(lwout) << 91) + tmp2) | 3'b100;
             end
-            if (8'b10000000 + geni == ((sw[l] >> 11) & 8'b11111111) && ((tmp >> 1) & 1'b1) == 0) begin
+            if (8'b10000000 + geni == ((sw[l] >> 11) & 8'b11111111) && ((sw[l] >> 1) & 1'b1) == 0) begin
               tmp2 = sw[l] & ((1 << 59) - 1);
               sw[l] = (((sw[l] >> 91 << 32) + $unsigned(lwout) << 59) + tmp2) | 3'b010;
             end
-            if (8'b10000000 + geni == ((tmp >> 3) & 8'b11111111) && (tmp & 1'b1) == 0) begin
+            if (8'b10000000 + geni == ((sw[l] >> 3) & 8'b11111111) && (sw[l] & 1'b1) == 0) begin
               tmp2 = sw[l] & ((1 << 27) - 1);
               sw[l] = (((sw[l] >> 59 << 32) + $unsigned(lwout) << 27) + tmp2) | 3'b001;
             end
@@ -273,10 +273,9 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
           if (rrs[l] == 8'b10000000 + geni) begin
             rrs[l] = 8'b01111111;
             rf[l] = lwout;
-            $display("lw to register %b: %b %b", l, lwout, cacheout);
+            $display("lw over %g: %b from RS %b in address %g", l, lwout, geni, addres);
           end        
         lw[geni] = 0;
-                $display("lw over: %b", geni);
       end
     end
   end
@@ -288,10 +287,11 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
     reg[`SW_RS_SIZE-1:0] tmp2;
     assign tmp = sw[geni];
     wire[`WORD_SIZE-1:0] addres;
-    ADD addd(addres, $signed(tmp[81:50]), $signed(tmp[49:18]));
+    ADD addd(addres, $signed(tmp[90:59]), $signed(tmp[58:27]));
     always @(posedge clk) begin // need condition
       if (tmp[2:2] == 1'b1 && tmp[1:1] == 1'b1 && tmp[0:0] == 1'b1) begin
-        write = tmp[113:82];
+        write = tmp[122:91];
+        $display("write %g: %b from %b", addres, write, tmp);
         cachein = addres;
         writable = 1;
         #0 if (miss == 1) begin
@@ -299,7 +299,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
         end else
           writable = 0;
         sw[geni] = 0;
-                $display("sw over: %b", geni);
+        $display("sw over: %b", geni);
       end
     end
   end
@@ -320,22 +320,22 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
       for (j = 0; j < 96; j = j + 1)
         if (lw[j] >> (`GENERAL_RS_SIZE - 1) == 1) begin
           over = 0;
-          //$display("halt lw %g %b", j, lw[j]);
+          $display("halt lw %g %b", j, lw[j]);
         end
       for (j = 0; j < 32; j = j + 1)
         if (sw[j] >> (`SW_RS_SIZE - 1) == 1) begin
           over = 0;
-          //$display("halt sw %g %b", j, sw[j]);
+          $display("halt sw %g %b", j, sw[j]);
         end
       for (j = 0; j < 32; j = j + 1)
         if (add[j] >> (`GENERAL_RS_SIZE - 1) == 1) begin
           over = 0;
-          //$display("halt add %g %b", j, add[j]);
+          $display("halt add %g %b", j, add[j]);
         end
       for (j = 0; j < 32; j = j + 1)
         if (mul[j] >> (`GENERAL_RS_SIZE - 1) == 1) begin
           over = 0;
-          //$display("halt mul %g %b", j, mul[j]);
+          $display("halt mul %g %b", j, mul[j]);
         end
       if (over == 1) begin
         $display("over == 1");
@@ -482,6 +482,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
             mul[i] = (((mul[i] >> 82 << 32) + rf[reg2] << 50) + tmp2) | 2'b10;
           end
         end
+        $display("put mul value %b", mul[i]);
         rrs[reg1] = i + 8'b01000000;
         out = 1;
       end

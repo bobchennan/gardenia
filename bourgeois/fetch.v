@@ -213,7 +213,7 @@ module fetch(clk);
                 //imm
                 hasimm = 1;
                 imm = $signed(inst[21:1]);
-                $display("cnx %g:%g", reg1, imm);
+                //$display("cnx %g:%g", reg1, imm);
                 #0 enable = 1;
                 #0 if(out2==0)begin
                     unfinish = 1;

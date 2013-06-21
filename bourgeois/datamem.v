@@ -19,6 +19,7 @@ module datamem(clk, in, readable, writable, write, out1, out2, flush);
   
   always @(posedge clk) begin
     if (writable == 1) begin
+        $display("write %g %b", in, write);
         for (i = 0; i < `BLOCK_SIZE / `BYTE_SIZE; i = i + 1) 
           data[(in >> 7 << 7) + i] = (write >> (`BLOCK_SIZE - `BYTE_SIZE * (i+1))) & 8'b11111111;
     end
