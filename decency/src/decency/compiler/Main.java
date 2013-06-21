@@ -133,7 +133,8 @@ public class Main {
 					emit(new MV(new Reg(bb), new Imm(dict.get(b))));
 					emit(new MV(new Reg(cc), new Imm(dict.get(c))));
 					emit(new NOP());
-					emit(new LW(new Reg(aij), new Reg(ai), new Reg(iter.get(1))));// assume
+					emit(new MUL(new Reg(aij), new Reg(iter.get(1)), new Imm(4)));
+					emit(new LW(new Reg(aij), new Reg(ai), new Reg(aij)));// assume
 																					// aa
 																					// =
 																					// 0
