@@ -36,13 +36,13 @@ module fetch(clk);
   end
   
   always @(posedge clk)begin
-    $display("posedge");
+    //$display("posedge");
     if(hit === 1 && unfinish)begin
       unfinish = 0;
       begin:loop
         while(1)begin
           inst = out >> idx;
-          $display("%b", inst);
+          if(inst!=0)$display("%g,%b", newpc+(992-idx)/8,inst);
           case(inst>>28)
             4'b1000: begin
               unit = 3'b010;
@@ -131,12 +131,11 @@ module fetch(clk);
               //enable = 0;
               $display("%g:%g %g:%g", reg1, va, reg2, vb);
               if(va > vb)begin
-                newpc = $unsigned($signed(newpc) + $signed(inst[27:0]));
+                $display("bgt pc %g idx %g offset %g", $signed(newpc), $signed((992-idx)/8), $signed(inst[15:0]));
+                newpc = $unsigned($signed(newpc) + $signed((992-idx)/8) + $signed(inst[15:0]));
                 idx = 992;
-                if(hit!==1)begin
-                    unfinish = 1;
-                    disable loop;
-                end
+                unfinish = 1;
+                disable loop;
               end
               else
                 idx = idx - `WORD_SIZE;
@@ -201,12 +200,11 @@ module fetch(clk);
               end
             end
             4'b1110:begin
-              newpc = $unsigned($signed(newpc) + $signed(inst[27:0]));
+              $display("J pc %g idx %g offset %g", $signed(newpc) , $signed((992-idx)/8) , $signed(inst[27:0]));
+              newpc = $unsigned($signed(newpc) + $signed((992-idx)/8) + $signed(inst[27:0]));
               idx = 992;
-              if(hit!==1)begin
-                unfinish = 1;
-                disable loop;
-              end
+              unfinish = 1;
+              disable loop;
             end
             4'b1111:begin
               unit = 3'b100;
@@ -241,9 +239,9 @@ module fetch(clk);
               if(idx<0)begin
                 newpc=newpc+128;
                 idx = 992;
+                unfinish = 1;
+                disable loop;
               end
-              unfinish = 1;
-              disable loop;
             end
             4'b0001:begin
               unit = 3'b101;
@@ -259,10 +257,8 @@ module fetch(clk);
           if(idx<0)begin
             newpc = newpc + 128;
             idx = 992;
-                  if(hit!==1)begin
-                      unfinish = 1;
-                      disable loop;
-                  end
+            unfinish = 1;
+            disable loop;
           end
         end
       end
