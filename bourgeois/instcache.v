@@ -11,9 +11,9 @@ module instcache(clk, in, out, hit);
   wire[`CACHE_OFFSET_LEN-1:0] offset;
   assign offset=in[4:0];
   wire[`CACHE_INDEX_LEN-1:0] index;
-  assign index=in[6:5];
+  assign index=in[7:5];
   wire[`CACHE_TAG_LEN-1:0] tag;
-  assign tag=in[31:7];
+  assign tag=in[31:8];
 
   reg[`CACHE_TAG_LEN-1:0] Tag[`CACHE_GROUP-1:0];
   reg[`BLOCK_SIZE-1:0] Val[`CACHE_GROUP-1:0];
@@ -31,12 +31,17 @@ module instcache(clk, in, out, hit);
     Valid[1]=0;
     Valid[2]=0;
     Valid[3]=0;
+    Valid[4]=0;
+    Valid[5]=0;
+    Valid[6]=0;
+    Valid[7]=0;
     //$display("cache initial");
   end
         
   always @(posedge clk) begin:cnx
       //$display("%b index:%g tag1:%b tag2:%b valid:%b", hit, index, Tag[index], tag, Valid[index]);
       if(hit !== 1)begin
+        $display("warning %g miss store in %g", in, index);
 		    #`CACHE_MISS_TIME Val[index] = ou1;
 		    Val2[index] = ou2;
         Tag[index] = tag;
