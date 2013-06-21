@@ -33,6 +33,7 @@ module datamem(clk, in, readable, writable, write, out1, out2, flush);
     end
   end
   always @(flush) begin
+    $display("datamem halt %b", flush);
     if (flush == 1) begin: cpures
       integer outfile, i;
       outfile =  $fopen("cpures.txt");

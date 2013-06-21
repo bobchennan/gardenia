@@ -61,48 +61,48 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
       if (tmp[1:1] == 1 && tmp[0:0] == 1) begin
         for (l = 0; l < 32; l = l + 1) 
           if (add[l] >> (`GENERAL_RS_SIZE - 1) == 1) begin
-            if (8'b00100000 + geni == (add[l] >> 10) & 8'b11111111 && (add[l] >> 1) & 1'b1 == 0) begin
+            if (8'b00100000 + geni == ((add[l] >> 10) & 8'b11111111) && ((add[l] >> 1) & 1'b1) == 0) begin
               tmp2 = add[l] & ((1 << 50) - 1);
               add[l] = (((add[l] >> 82 << 32) + $unsigned(addout) << 50) + tmp2) | 2'b10;
             end
-            if (8'b00100000 + geni == (add[l] >> 2) & 8'b11111111 && add[l] & 1'b1 == 0) begin
+            if (8'b00100000 + geni == ((add[l] >> 2) & 8'b11111111) && (add[l] & 1'b1) == 0) begin
               tmp2 = add[l] & ((1 << 18) - 1);
               add[l] = (((add[l] >> 50 << 32) + $unsigned(addout) << 18) + tmp2) | 2'b01;
             end
           end
         for (l = 0; l < 32; l = l + 1) 
           if (mul[l] >> (`GENERAL_RS_SIZE - 1) == 1) begin
-            if (8'b00100000 + geni == (mul[l] >> 10) & 8'b11111111 && (mul[l] >> 1) & 1'b1 == 0) begin
+            if (8'b00100000 + geni == ((mul[l] >> 10) & 8'b11111111) && ((mul[l] >> 1) & 1'b1) == 0) begin
               tmp2 = add[l] & ((1 << 50) - 1);
               mul[l] = (((mul[l] >> 82 << 32) + $unsigned(addout) << 50) + tmp2) | 2'b10;
             end
-            if (8'b00100000 + geni == (mul[l] >> 2) & 8'b11111111 && mul[l] & 1'b1 == 0) begin
+            if (8'b00100000 + geni == ((mul[l] >> 2) & 8'b11111111) && (mul[l] & 1'b1) == 0) begin
               tmp2 = mul[l] & ((1 << 18) - 1);
               mul[l] = (((mul[l] >> 50 << 32) + $unsigned(addout) << 18) + tmp2) | 2'b01;
             end
           end
         for (l = 0; l < 96; l = l + 1) 
           if (lw[l] >> (`GENERAL_RS_SIZE - 1) == 1) begin
-            if (8'b00100000 + geni == (lw[l] >> 10) & 8'b11111111 && (lw[l] >> 1) & 1'b1 == 0) begin
+            if (8'b00100000 + geni == ((lw[l] >> 10) & 8'b11111111) && ((lw[l] >> 1) & 1'b1) == 0) begin
               tmp2 = lw[l] & ((1 << 50) - 1);
               lw[l] = (((lw[l] >> 82 << 32) + $unsigned(addout) << 50) + tmp2) | 2'b10;
             end
-            if (8'b00100000 + geni == (lw[l] >> 2) & 8'b11111111 && lw[l] & 1'b1 == 0) begin
+            if (8'b00100000 + geni == ((lw[l] >> 2) & 8'b11111111) && (lw[l] & 1'b1) == 0) begin
               tmp2 = lw[l] & ((1 << 18) - 1);
               lw[l] = (((lw[l] >> 50 << 32) + $unsigned(addout) << 18) + tmp2) | 2'b01;
             end
           end
         for (l = 0; l < 32; l = l + 1) 
           if (sw[l] >> (`SW_RS_SIZE - 1) == 1) begin
-            if (8'b00100000 + geni == (sw[l] >> 19) & 8'b11111111 && (sw[l] >> 2) & 1'b1 == 0) begin
+            if (8'b00100000 + geni == ((sw[l] >> 19) & 8'b11111111) && ((sw[l] >> 2) & 1'b1) == 0) begin
               tmp2 = sw[l] & ((1 << 91) - 1);
               sw[l] = (((sw[l] >> 123 << 32) + $unsigned(addout) << 91) + tmp2) | 3'b100;
             end
-            if (8'b00100000 + geni == (sw[l] >> 11) & 8'b11111111 && (tmp >> 1) & 1'b1 == 0) begin
+            if (8'b00100000 + geni == ((sw[l] >> 11) & 8'b11111111) && ((tmp >> 1) & 1'b1) == 0) begin
               tmp2 = sw[l] & ((1 << 59) - 1);
               sw[l] = (((sw[l] >> 91 << 32) + $unsigned(addout) << 59) + tmp2) | 3'b010;
             end
-            if (8'b00100000 + geni == (tmp >> 3) & 8'b11111111 && tmp & 1'b1 == 0) begin
+            if (8'b00100000 + geni == ((tmp >> 3) & 8'b11111111) && (tmp & 1'b1) == 0) begin
               tmp2 = sw[l] & ((1 << 27) - 1);
               sw[l] = (((sw[l] >> 59 << 32) + $unsigned(addout) << 27) + tmp2) | 3'b001;
             end
@@ -131,48 +131,48 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
       if (tmp[1:1] == 1 && tmp[0:0] == 1) begin
         for (l = 0; l < 32; l = l + 1) 
           if (add[l] >> (`GENERAL_RS_SIZE - 1) == 1) begin
-            if (8'b01000000 + geni == (add[l] >> 10) & 8'b11111111 && (add[l] >> 1) & 1'b1 == 0) begin
+            if (8'b01000000 + geni == ((add[l] >> 10) & 8'b11111111) && ((add[l] >> 1) & 1'b1) == 0) begin
               tmp2 = add[l] & ((1 << 50) - 1);
               add[l] = (((add[l] >> 82 << 32) + $unsigned(mulout) << 50) + tmp2) | 2'b10;
             end
-            if (8'b01000000 + geni == (add[l] >> 2) & 8'b11111111 && add[l] & 1'b1 == 0) begin
+            if (8'b01000000 + geni == ((add[l] >> 2) & 8'b11111111) && (add[l] & 1'b1) == 0) begin
               tmp2 = add[l] & ((1 << 18) - 1);
               add[l] = (((add[l] >> 50 << 32) + $unsigned(mulout) << 18) + tmp2) | 2'b01;
             end
           end
         for (l = 0; l < 32; l = l + 1) 
           if (mul[l] >> (`GENERAL_RS_SIZE - 1) == 1) begin
-            if (8'b01000000 + geni == (mul[l] >> 10) & 8'b11111111 && (mul[l] >> 1) & 1'b1 == 0) begin
+            if (8'b01000000 + geni == ((mul[l] >> 10) & 8'b11111111) && ((mul[l] >> 1) & 1'b1) == 0) begin
               tmp2 = add[l] & ((1 << 50) - 1);
               mul[l] = (((mul[l] >> 82 << 32) + $unsigned(mulout) << 50) + tmp2) | 2'b10;
             end
-            if (8'b01000000 + geni == (mul[l] >> 2) & 8'b11111111 && mul[l] & 1'b1 == 0) begin
+            if (8'b01000000 + geni == ((mul[l] >> 2) & 8'b11111111) && (mul[l] & 1'b1) == 0) begin
               tmp2 = mul[l] & ((1 << 18) - 1);
               mul[l] = (((mul[l] >> 50 << 32) + $unsigned(mulout) << 18) + tmp2) | 2'b01;
             end
           end
         for (l = 0; l < 96; l = l + 1) 
           if (lw[l] >> (`GENERAL_RS_SIZE - 1) == 1) begin
-            if (8'b01000000 + geni == (lw[l] >> 10) & 8'b11111111 && (lw[l] >> 1) & 1'b1 == 0) begin
+            if (8'b01000000 + geni == ((lw[l] >> 10) & 8'b11111111) && ((lw[l] >> 1) & 1'b1) == 0) begin
               tmp2 = lw[l] & ((1 << 50) - 1);
               lw[l] = (((lw[l] >> 82 << 32) + $unsigned(mulout) << 50) + tmp2) | 2'b10;
             end
-            if (8'b01000000 + geni == (lw[l] >> 2) & 8'b11111111 && lw[l] & 1'b1 == 0) begin
+            if (8'b01000000 + geni == ((lw[l] >> 2) & 8'b11111111) && (lw[l] & 1'b1) == 0) begin
               tmp2 = lw[l] & ((1 << 18) - 1);
               lw[l] = (((lw[l] >> 50 << 32) + $unsigned(mulout) << 18) + tmp2) | 2'b01;
             end
           end
         for (l = 0; l < 32; l = l + 1) 
           if (sw[l] >> (`SW_RS_SIZE - 1) == 1) begin
-            if (8'b01000000 + geni == (sw[l] >> 19) & 8'b11111111 && (sw[l] >> 2) & 1'b1 == 0) begin
+            if (8'b01000000 + geni == ((sw[l] >> 19) & 8'b11111111) && ((sw[l] >> 2) & 1'b1) == 0) begin
               tmp2 = sw[l] & ((1 << 91) - 1);
               sw[l] = (((sw[l] >> 123 << 32) + $unsigned(mulout) << 91) + tmp2) | 3'b100;
             end
-            if (8'b01000000 + geni == (sw[l] >> 11) & 8'b11111111 && (tmp >> 1) & 1'b1 == 0) begin
+            if (8'b01000000 + geni == ((sw[l] >> 11) & 8'b11111111) && ((tmp >> 1) & 1'b1) == 0) begin
               tmp2 = sw[l] & ((1 << 59) - 1);
               sw[l] = (((sw[l] >> 91 << 32) + $unsigned(mulout) << 59) + tmp2) | 3'b010;
             end
-            if (8'b01000000 + geni == (tmp >> 3) & 8'b11111111 && tmp & 1'b1 == 0) begin
+            if (8'b01000000 + geni == ((tmp >> 3) & 8'b11111111) && (tmp & 1'b1) == 0) begin
               tmp2 = sw[l] & ((1 << 27) - 1);
               sw[l] = (((sw[l] >> 59 << 32) + $unsigned(mulout) << 27) + tmp2) | 3'b001;
             end
@@ -211,6 +211,8 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
     integer l;
     ADD addd(addres, $signed(tmp[81:50]), $signed(tmp[49:18]));
     always @(posedge clk) begin // need condition
+      if (tmp[`GENERAL_RS_SIZE-1:`GENERAL_RS_SIZE-1] == 1)
+        $display("lw status %b:%b", geni, tmp);
       if (tmp[1:1] == 1'b1 && tmp[0:0] == 1'b1) begin
         cachein = addres;
         readable = 1;
@@ -221,48 +223,48 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
         readable = 0;
         for (l = 0; l < 32; l = l + 1) 
           if (add[l] >> (`GENERAL_RS_SIZE - 1) == 1) begin
-            if (8'b10000000 + geni == (add[l] >> 10) & 8'b11111111 && (add[l] >> 1) & 1'b1 == 0) begin
+            if (8'b10000000 + geni == ((add[l] >> 10) & 8'b11111111) && ((add[l] >> 1) & 1'b1) == 0) begin
               tmp2 = add[l] & ((1 << 50) - 1);
               add[l] = (((add[l] >> 82 << 32) + $unsigned(lwout) << 50) + tmp2) | 2'b10;
             end
-            if (8'b10000000 + geni == (add[l] >> 2) & 8'b11111111 && add[l] & 1'b1 == 0) begin
+            if (8'b10000000 + geni == ((add[l] >> 2) & 8'b11111111) && (add[l] & 1'b1) == 0) begin
               tmp2 = add[l] & ((1 << 18) - 1);
               add[l] = (((add[l] >> 50 << 32) + $unsigned(lwout) << 18) + tmp2) | 2'b01;
             end
           end
         for (l = 0; l < 32; l = l + 1) 
           if (mul[l] >> (`GENERAL_RS_SIZE - 1) == 1) begin
-            if (8'b10000000 + geni == (mul[l] >> 10) & 8'b11111111 && (mul[l] >> 1) & 1'b1 == 0) begin
+            if (8'b10000000 + geni == ((mul[l] >> 10) & 8'b11111111) && ((mul[l] >> 1) & 1'b1) == 0) begin
               tmp2 = add[l] & ((1 << 50) - 1);
               mul[l] = (((mul[l] >> 82 << 32) + $unsigned(lwout) << 50) + tmp2) | 2'b10;
             end
-            if (8'b10000000 + geni == (mul[l] >> 2) & 8'b11111111 && mul[l] & 1'b1 == 0) begin
+            if (8'b10000000 + geni == ((mul[l] >> 2) & 8'b11111111) && (mul[l] & 1'b1) == 0) begin
               tmp2 = mul[l] & ((1 << 18) - 1);
               mul[l] = (((mul[l] >> 50 << 32) + $unsigned(lwout) << 18) + tmp2) | 2'b01;
             end
           end
         for (l = 0; l < 96; l = l + 1) 
           if (lw[l] >> (`GENERAL_RS_SIZE - 1) == 1) begin
-            if (8'b10000000 + geni == (lw[l] >> 10) & 8'b11111111 && (lw[l] >> 1) & 1'b1 == 0) begin
+            if (8'b10000000 + geni == ((lw[l] >> 10) & 8'b11111111) && ((lw[l] >> 1) & 1'b1) == 0) begin
               tmp2 = lw[l] & ((1 << 50) - 1);
               lw[l] = (((lw[l] >> 82 << 32) + $unsigned(lwout) << 50) + tmp2) | 2'b10;
             end
-            if (8'b10000000 + geni == (lw[l] >> 2) & 8'b11111111 && lw[l] & 1'b1 == 0) begin
+            if (8'b10000000 + geni == ((lw[l] >> 2) & 8'b11111111) && (lw[l] & 1'b1) == 0) begin
               tmp2 = lw[l] & ((1 << 18) - 1);
               lw[l] = (((lw[l] >> 50 << 32) + $unsigned(lwout) << 18) + tmp2) | 2'b01;
             end
           end
         for (l = 0; l < 32; l = l + 1) 
           if (sw[l] >> (`SW_RS_SIZE - 1) == 1) begin
-            if (8'b10000000 + geni == (sw[l] >> 19) & 8'b11111111 && (sw[l] >> 2) & 1'b1 == 0) begin
+            if (8'b10000000 + geni == ((sw[l] >> 19) & 8'b11111111) && ((sw[l] >> 2) & 1'b1) == 0) begin
               tmp2 = sw[l] & ((1 << 91) - 1);
               sw[l] = (((sw[l] >> 123 << 32) + $unsigned(lwout) << 91) + tmp2) | 3'b100;
             end
-            if (8'b10000000 + geni == (sw[l] >> 11) & 8'b11111111 && (tmp >> 1) & 1'b1 == 0) begin
+            if (8'b10000000 + geni == ((sw[l] >> 11) & 8'b11111111) && ((tmp >> 1) & 1'b1) == 0) begin
               tmp2 = sw[l] & ((1 << 59) - 1);
               sw[l] = (((sw[l] >> 91 << 32) + $unsigned(lwout) << 59) + tmp2) | 3'b010;
             end
-            if (8'b10000000 + geni == (tmp >> 3) & 8'b11111111 && tmp & 1'b1 == 0) begin
+            if (8'b10000000 + geni == ((tmp >> 3) & 8'b11111111) && (tmp & 1'b1) == 0) begin
               tmp2 = sw[l] & ((1 << 27) - 1);
               sw[l] = (((sw[l] >> 59 << 32) + $unsigned(lwout) << 27) + tmp2) | 3'b001;
             end
@@ -312,29 +314,31 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
     over = 0;
   end
   always @(halt) begin
+    $display("rs halt %b", halt);
     while (halt == 1) begin
       over = 1;
-      for (j = 0; j < 96 && over; j = j + 1)
-        if (lw[j] >> (`GENERAL_RS_SIZE - 1) == 0) begin
+      for (j = 0; j < 96; j = j + 1)
+        if (lw[j] >> (`GENERAL_RS_SIZE - 1) == 1) begin
           over = 0;
-          //break;
+          //$display("halt lw %g %b", j, lw[j]);
         end
-      for (j = 0; j < 32 && over; j = j + 1)
-        if (sw[j] >> (`SW_RS_SIZE - 1) == 0) begin
+      for (j = 0; j < 32; j = j + 1)
+        if (sw[j] >> (`SW_RS_SIZE - 1) == 1) begin
           over = 0;
-          //break;
+          //$display("halt sw %g %b", j, sw[j]);
         end
-      for (j = 0; j < 32 && over; j = j + 1)
-        if (add[j] >> (`GENERAL_RS_SIZE - 1) == 0) begin
+      for (j = 0; j < 32; j = j + 1)
+        if (add[j] >> (`GENERAL_RS_SIZE - 1) == 1) begin
           over = 0;
-          //break;
+          //$display("halt add %g %b", j, add[j]);
         end
-      for (j = 0; j < 32 && over; j = j + 1)
-        if (mul[j] >> (`GENERAL_RS_SIZE - 1) == 0) begin
+      for (j = 0; j < 32; j = j + 1)
+        if (mul[j] >> (`GENERAL_RS_SIZE - 1) == 1) begin
           over = 0;
-          //break;
+          //$display("halt mul %g %b", j, mul[j]);
         end
       if (over == 1) begin
+        $display("over == 1");
         flush = 1;
         halt = 0;
       end else begin
