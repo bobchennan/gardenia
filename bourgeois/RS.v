@@ -217,7 +217,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
         cachein = addres;
         readable = 1;
         #0 if (miss == 1) begin
-          #(`CACHE_MISS_TIME+1) lwout = cacheout;
+          #(`CACHE_MISS_TIME+2) lwout = cacheout;
         end else
           lwout = cacheout;
         readable = 0;

@@ -19,20 +19,9 @@ module czptestbench();
     #2 readable = 1;
     #106 $display("%b", out);
     #107 readable = 0;
-    #210 in = `WORD_SIZE'b1;
-    #210 write = 32'b111101;
+    #210 in = `WORD_SIZE'b1000;
     #211 readable = 1;
-    #211 writable = 1;
     #216 $display("%b", out);
     #217 readable = 0;
-    #217 writable = 0;
-    #220 in = `WORD_SIZE'b1;
-    #221 readable = 1;
-    #226 $display("%b", out);
-    #227 readable = 0;
-    #230 in = `WORD_SIZE'b10;
-    #231 readable = 1;
-    #236 $display("%b", out);
-    #237 readable = 0;
   join
 endmodule

@@ -14,9 +14,9 @@ module datacache(clk, in, readable, writable, write, out, miss, flush);
   wire[`CACHE_OFFSET_LEN-1:0] offset;
   assign offset=in[6:0];
   wire[`CACHE_INDEX_LEN-1:0] index;
-  assign index=in[8:7];
+  assign index=in[9:7];
   wire[`CACHE_TAG_LEN-1:0] tag;
-  assign tag=in[31:9];
+  assign tag=in[31:10];
 
   reg[`CACHE_TAG_LEN-1:0] Tag[`CACHE_GROUP-1:0];
   reg[`BLOCK_SIZE-1:0] Val[`CACHE_GROUP-1:0];
@@ -35,7 +35,7 @@ module datacache(clk, in, readable, writable, write, out, miss, flush);
   
   reg[`CACHE_GROUP-1:0] i;
   initial begin
-    for (i = 0; i < 4; i = i + 1) begin
+    for (i = 0; i < 8; i = i + 1) begin
       Valid[i] = 0;
       Dirty[i] = 0;
     end
@@ -59,7 +59,7 @@ module datacache(clk, in, readable, writable, write, out, miss, flush);
       end else begin
         miss = 1;
         if (Dirty[index] == 1) begin
-          cachein = Tag[index] << 6 + index << 4;
+          cachein = Tag[index] << 10 + index << 7;
           cachewrite = Val[index];
           cachewritable = 1;
           #0 cachewritable = 0;
@@ -82,10 +82,11 @@ module datacache(clk, in, readable, writable, write, out, miss, flush);
     if (readable == 1) begin
       if (hit == 1) begin
           out = (Val[index] >> (`BLOCK_SIZE - offset * `BYTE_SIZE - `WORD_SIZE)) & 32'b11111111_11111111_11111111_11111111;
+          $display("cache hit %g:%b", in, out);
       end else begin
         miss = 1;
         if (Dirty[index] == 1) begin
-          cachein = Tag[index] << 6 + index << 4;
+          cachein = Tag[index] << 10 + index << 7;
           cachewrite = Val[index];
           cachewritable = 1;
           #0 cachewritable = 0;
@@ -99,6 +100,7 @@ module datacache(clk, in, readable, writable, write, out, miss, flush);
         Tag[index] = tag;
         Valid[index] = 1;
         out = (Val[index] >> (`BLOCK_SIZE - offset * `BYTE_SIZE - `WORD_SIZE)) & 32'b11111111_11111111_11111111_11111111;
+        $display("cache miss %g:%b", in, out);
         //$display("## %b %b %b", index, Val[index], ou1);
       end
     end
@@ -108,9 +110,9 @@ module datacache(clk, in, readable, writable, write, out, miss, flush);
   always @(flush) begin
     $display("datacache halt %b", flush);
     if (flush == 1) begin
-      for (i = 0; i < 4; i = i + 1) 
+      for (i = 0; i < 8; i = i + 1) 
         if (Valid[i] == 1 && Dirty[i] == 1) begin
-          cachein = Tag[i] << 6 + i << 4;
+          cachein = Tag[i] << 10 + i << 7;
           cachewrite = Val[i];
           cachewritable = 1;
           #0 cachewritable = 0;
