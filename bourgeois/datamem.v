@@ -9,7 +9,7 @@ module datamem(clk, in, readable, writable, write, out1, out2, flush);
   input flush;
   
   reg[`BYTE_SIZE-1:0] data[0:`DATA_MEM_SIZE-1];
-  reg[`WORD_SIZE-1:0] i;
+  integer i;
 
   initial begin
     for(i=0;i<`DATA_MEM_SIZE;i=i+1)
@@ -27,9 +27,11 @@ module datamem(clk, in, readable, writable, write, out1, out2, flush);
   always @(readable) begin
     if (readable == 1) begin
       out1 = 0;
-      for (i = 0; i < `BLOCK_SIZE / `BYTE_SIZE; i = i + 1) 
+      for (i = 0; i < `BLOCK_SIZE / `BYTE_SIZE; i = i + 1) begin
         out1 = (out1 << `BYTE_SIZE) + data[(in >> 7 << 7) + i];
-      //$display("%b", out1);
+        //$display("i=%b out1=%b, data[0]=%b", i, out1, data[(in >> 7 << 7)+i]);
+      end
+      //$display("out1=%b, data[0]=%b", out1, data[0]);
       out2 = 0;
       for (i = 0; i < `BLOCK_SIZE / `BYTE_SIZE; i = i + 1)
         out2 = (out2 << `BYTE_SIZE) + data[(in >> 7 << 7) + `BLOCK_SIZE / `BYTE_SIZE + i];

@@ -93,13 +93,14 @@ module datacache(clk, in, readable, writable, write, out, hit, flush);
           Dirty[index] = 0;
         end
         cachein = in;
+        $display("cachein=%b",in);
         cachereadable = 1;
         #`CACHE_MISS_TIME Val[index] = ou1;
         cachereadable = 0;
         Tag[index] = tag;
         Valid[index] = 1;
         out = (Val[index] >> (`BLOCK_SIZE - offset * `BYTE_SIZE - `WORD_SIZE)) & 32'b11111111_11111111_11111111_11111111;
-        $display("cache miss %g:%b", in, out);
+        //$display("cache miss %g:%b %b", in, out, Val[index]);
         //$display("## %b %b %b", index, Val[index], ou1);
       end
     end

@@ -210,9 +210,9 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
   reg[`SW_RS_SIZE-1:0] qtmpsw;
   reg signed[`WORD_SIZE-1:0] lwout;
   reg[`SW_RS_SIZE-1:0] qtmp2;
-  wire[`WORD_SIZE-1:0] addreslw, addressw; // add result
-  ADD addlw(addreslw, $signed(qtmplw[81:50]), $signed(qtmplw[49:18]));
-  ADD addsw(addressw, $signed(qtmpsw[90:59]), $signed(qtmpsw[58:27]));
+  reg[`WORD_SIZE-1:0] addreslw, addressw; // add result
+  //ADD addlw(addreslw, $signed(qtmplw[81:50]), $signed(qtmplw[49:18]));
+  //ADD addsw(addressw, $signed(qtmpsw[90:59]), $signed(qtmpsw[58:27]));
   initial begin
     head = 0;
     tail = 0;
@@ -227,6 +227,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
     while (head != tail) begin
       if (queue[head] >> 7 == 1) begin //lw
         qtmplw = lw[queue[head] - 8'b10000000];
+        addreslw = qtmplw[81:50]+qtmplw[49:18];
         if (qtmplw[1:1] == 1'b1 && qtmplw[0:0] == 1'b1) begin
           cachein = addreslw;
           readable = 1;
@@ -295,6 +296,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
         end
       end else begin // sw
         qtmpsw = sw[queue[head]];
+        addressw = qtmpsw[90:59]+qtmpsw[58:27];
         if (qtmpsw[2:2] == 1'b1 && qtmpsw[1:1] == 1'b1 && qtmpsw[0:0] == 1'b1) begin
           write = qtmpsw[122:91];
           //$display("write %g: %b from %b", addres, write, tmp);
