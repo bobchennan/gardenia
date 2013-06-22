@@ -24,7 +24,7 @@ module datamem(clk, in, readable, writable, write, out1, out2, flush);
           data[(in >> 7 << 7) + i] = (write >> (`BLOCK_SIZE - `BYTE_SIZE * (i+1))) & 8'b11111111;
     end
   end
-  always @(posedge clk) begin
+  always @(readable) begin
     if (readable == 1) begin
       out1 = 0;
       for (i = 0; i < `BLOCK_SIZE / `BYTE_SIZE; i = i + 1) 

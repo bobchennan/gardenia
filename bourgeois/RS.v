@@ -206,11 +206,13 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
   //sw : 00000000 - 00011111
   reg[`UNIT_SIZE-1:0] queue[0:96+32-1];
   integer head, tail, l;
-  reg[`GENERAL_RS_SIZE-1:0] qtmp;
+  reg[`GENERAL_RS_SIZE-1:0] qtmplw;
+  reg[`SW_RS_SIZE-1:0] qtmpsw;
   reg signed[`WORD_SIZE-1:0] lwout;
-  reg[`GENERAL_RS_SIZE-1:0] qtmp2;
-  wire[`WORD_SIZE-1:0] addres; // add result
-  ADD addmem(addres, $signed(qtmp[81:50]), $signed(qtmp[49:18]));
+  reg[`SW_RS_SIZE-1:0] qtmp2;
+  wire[`WORD_SIZE-1:0] addreslw, addressw; // add result
+  ADD addlw(addreslw, $signed(qtmplw[81:50]), $signed(qtmplw[49:18]));
+  ADD addsw(addressw, $signed(qtmpsw[90:59]), $signed(qtmpsw[58:27]));
   initial begin
     head = 0;
     tail = 0;
@@ -224,9 +226,9 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
       
     while (head != tail) begin
       if (queue[head] >> 7 == 1) begin //lw
-        qtmp = lw[queue[head] - 8'b10000000];
-        if (qtmp[1:1] == 1'b1 && qtmp[0:0] == 1'b1) begin
-          cachein = addres;
+        qtmplw = lw[queue[head] - 8'b10000000];
+        if (qtmplw[1:1] == 1'b1 && qtmplw[0:0] == 1'b1) begin
+          cachein = addreslw;
           readable = 1;
           #0 if (hit !== 1) begin
             #(`CACHE_MISS_TIME+1) lwout = cacheout;
@@ -286,17 +288,17 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
               rrs[l] = 8'b01111111;
               rf[l] = lwout;
             end
-          $display("lw over %b from RS %b in address %g", lwout, queue[head], addres);
+          $display("lw over %b from RS %b in address %g", lwout, queue[head], addreslw);
           lw[queue[head] - 8'b10000000] = 0;
         end else begin
           disable queueloop;
         end
       end else begin // sw
-        qtmp = sw[queue[head]];
-        if (qtmp[2:2] == 1'b1 && qtmp[1:1] == 1'b1 && qtmp[0:0] == 1'b1) begin
-          write = qtmp[122:91];
+        qtmpsw = sw[queue[head]];
+        if (qtmpsw[2:2] == 1'b1 && qtmpsw[1:1] == 1'b1 && qtmpsw[0:0] == 1'b1) begin
+          write = qtmpsw[122:91];
           //$display("write %g: %b from %b", addres, write, tmp);
-          cachein = addres;
+          cachein = addressw;
           writable = 1;
           #0 if (hit !== 1) begin
             #(`CACHE_MISS_TIME+1) writable = 0;
