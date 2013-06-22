@@ -111,9 +111,9 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
           if (rrs[l] == 8'b00100000 + geni) begin
             rrs[l] = 8'b01111111;
             rf[l] = addout;
-            $display("add over %g:%b", l, addout);
           end
         add[geni] = 0;
+        $display("add over %g:%b", geni, addout);
       end
     end
   end
@@ -216,11 +216,11 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
     tail = 0;
   end
   always @(posedge clk) begin : queueloop
-    $display("head=%g tail=%g queue[head]=%b", head, tail, queue[head]);
-    if (queue[head] >> 7 == 1) 
-      $display("queuelw %b", lw[queue[head] - 8'b10000000]);
-    else
-      $display("queuesw %b", sw[queue[head]]);
+    //$display("head=%g tail=%g queue[head]=%b", head, tail, queue[head]);
+    //if (queue[head] >> 7 == 1) 
+    //  $display("queuelw %b", lw[queue[head] - 8'b10000000]);
+    //else
+    //  $display("queuesw %b", sw[queue[head]]);
       
     while (head != tail) begin
       if (queue[head] >> 7 == 1) begin //lw
@@ -229,7 +229,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
           cachein = addres;
           readable = 1;
           #0 if (hit !== 1) begin
-            #`CACHE_MISS_TIME lwout = cacheout;
+            #(`CACHE_MISS_TIME+1) lwout = cacheout;
           end else
             lwout = cacheout;
           readable = 0;
@@ -299,7 +299,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
           cachein = addres;
           writable = 1;
           #0 if (hit !== 1) begin
-            #`CACHE_MISS_TIME writable = 0;
+            #(`CACHE_MISS_TIME+1) writable = 0;
           end else
             writable = 0;
           sw[queue[head]] = 0;
@@ -327,22 +327,22 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
       for (j = 0; j < 96; j = j + 1)
         if (lw[j] >> (`GENERAL_RS_SIZE - 1) == 1) begin
           over = 0;
-          $display("halt lw %g %b", j, lw[j]);
+          //$display("halt lw %g %b", j, lw[j]);
         end
       for (j = 0; j < 32; j = j + 1)
         if (sw[j] >> (`SW_RS_SIZE - 1) == 1) begin
           over = 0;
-          $display("halt sw %g %b", j, sw[j]);
+          //$display("halt sw %g %b", j, sw[j]);
         end
       for (j = 0; j < 32; j = j + 1)
         if (add[j] >> (`GENERAL_RS_SIZE - 1) == 1) begin
           over = 0;
-          $display("halt add %g %b", j, add[j]);
+          //$display("halt add %g %b", j, add[j]);
         end
       for (j = 0; j < 32; j = j + 1)
         if (mul[j] >> (`GENERAL_RS_SIZE - 1) == 1) begin
           over = 0;
-          $display("halt mul %g %b", j, mul[j]);
+          //$display("halt mul %g %b", j, mul[j]);
         end
       if (over == 1) begin
         $display("over == 1");
