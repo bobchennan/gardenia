@@ -56,6 +56,7 @@ module datacache(clk, in, readable, writable, write, out, hit, flush);
         Dirty[index] = 1;
         $display("cache write %g:%b", in, write);
       end else begin
+        #`CACHE_MISS_TIME 
         if (Dirty[index] == 1) begin
           cachein = Tag[index] << 10 + index << 7;
           cachewrite = Val[index];
@@ -64,7 +65,7 @@ module datacache(clk, in, readable, writable, write, out, hit, flush);
         end
         cachein = in;
         cachereadable = 1;
-        #`CACHE_MISS_TIME Val[index] = ou1;
+        Val[index] = ou1;
         cachereadable = 0;
         Tag[index] = tag;
         Valid[index] = 1;

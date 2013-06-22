@@ -17,12 +17,14 @@ module datamem(clk, in, readable, writable, write, out1, out2, flush);
     $readmemh("ram_data.txt", data);
   end
   
-  always @(posedge clk) begin
+  always @(writable) begin
     if (writable == 1) begin
         $display("write %g %b", in, write);
         for (i = 0; i < `BLOCK_SIZE / `BYTE_SIZE; i = i + 1) 
           data[(in >> 7 << 7) + i] = (write >> (`BLOCK_SIZE - `BYTE_SIZE * (i+1))) & 8'b11111111;
     end
+  end
+  always @(posedge clk) begin
     if (readable == 1) begin
       out1 = 0;
       for (i = 0; i < `BLOCK_SIZE / `BYTE_SIZE; i = i + 1) 
@@ -38,8 +40,8 @@ module datamem(clk, in, readable, writable, write, out1, out2, flush);
     if (flush == 1) begin: cpures
       integer outfile, i;
       outfile =  $fopen("cpures.txt");
-      for (i = 0; i < `DATA_MEM_SIZE; i = i + 4)
-        $fdisplay(outfile, "%h %h %h %h\n", data[i], data[i+1], data[i+2], data[i+3]);
+      for (i = 0; i < `DATA_MEM_SIZE; i = i + 4) 
+        $fdisplay(outfile, "%h %h %h %h", data[i], data[i+1], data[i+2], data[i+3]);
       $fclose(outfile);
       $finish(2);
     end

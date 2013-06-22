@@ -275,8 +275,8 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
           if (rrs[l] == 8'b10000000 + geni) begin
             rrs[l] = 8'b01111111;
             rf[l] = lwout;
-            $display("lw over %g: %b from RS %b in address %g", l, lwout, geni, addres);
-          end        
+          end
+        $display("lw over %b from RS %b in address %g", lwout, geni, addres);
         lw[geni] = 0;
       end
     end
@@ -302,7 +302,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
         end else
           writable = 0;
         sw[geni] = 0;
-        $display("sw over: %b", geni);
+        $display("sw over: %b %b", geni, write);
       end
     end
   end
