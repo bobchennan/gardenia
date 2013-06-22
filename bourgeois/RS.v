@@ -111,9 +111,9 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
           if (rrs[l] == 8'b00100000 + geni) begin
             rrs[l] = 8'b01111111;
             rf[l] = addout;
-            $display("add over %g:%b", l, addout);
           end
         add[geni] = 0;
+        $display("add over %g:%b", geni, addout);
       end
     end
   end
@@ -195,127 +195,131 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
   wire[`WORD_SIZE-1:0] cacheout;
   output hit;
   reg flush;
-  reg stop;
   datacache data(clk, cachein, readable, writable, write, cacheout, hit, flush);
   initial begin
     flush = 0;
     cachein = 0;
     readable = 0;
-    stop = 0;
-    #0 readable = 1;
-    #1 readable = 0;
     writable = 0;
+    #5 readable = 1;
+    #10 readable = 0;
   end
-  //ALU for lw
-  generate for (geni = 0; geni < 96; geni = geni + 1) begin:czplw
-    wire[`GENERAL_RS_SIZE-1:0] tmp;
-    reg signed[`WORD_SIZE-1:0] lwout;
-    reg[`GENERAL_RS_SIZE-1:0] tmp2;
-    assign tmp = lw[geni];
-    wire[`WORD_SIZE-1:0] addres; // add result
-    integer l;
-    ADD addd(addres, $signed(tmp[81:50]), $signed(tmp[49:18]));
-    always @(posedge clk) begin:lwblock // need condition
-      if (tmp[`GENERAL_RS_SIZE-1:`GENERAL_RS_SIZE-1] == 1)
-        $display("lw status %b:%b", geni, tmp);
-      if (tmp[1:1] == 1'b1 && tmp[0:0] == 1'b1 && stop == 0) begin
-        cachein = addres;
-        readable = 1;
-        stop = 1;
-        $display("RS begin get %g-%g", cachein, addres);
-        #0 if (hit !== 1 || cachein !== addres) begin
+  
+  //lw : 10000000 - 11011111
+  //sw : 00000000 - 00011111
+  reg[`UNIT_SIZE-1:0] queue[0:96+32-1];
+  integer head, tail, l;
+  reg[`GENERAL_RS_SIZE-1:0] qtmplw;
+  reg[`SW_RS_SIZE-1:0] qtmpsw;
+  reg signed[`WORD_SIZE-1:0] lwout;
+  reg[`SW_RS_SIZE-1:0] qtmp2;
+  reg[`WORD_SIZE-1:0] addreslw, addressw; // add result
+  initial begin
+    head = 0;
+    tail = 0;
+  end
+  always @(posedge clk) begin : queueloop
+    $display("head=%g tail=%g queue[head]=%b", head, tail, queue[head]);
+    //if (queue[head] >> 7 == 1) 
+    //  $display("queuelw %b", lw[queue[head] - 8'b10000000]);
+    //else
+    //  $display("queuesw %b", sw[queue[head]]);
+      
+    while (head != tail) begin
+      if (queue[head] >> 7 == 1) begin //lw
+        qtmplw = lw[queue[head] - 8'b10000000];
+         addreslw = qtmplw[81:50]+qtmplw[49:18];
+        if (qtmplw[1:1] == 1'b1 && qtmplw[0:0] == 1'b1) begin
+          cachein = addreslw;
+          readable = 1;
+          #0 $display("rs begin query %g hit %g", addreslw, hit);
+          if (hit !== 1) begin
+            readable = 0;
+            disable queueloop;
+          end else
+            lwout = cacheout;
           readable = 0;
-          disable lwblock;
-        end else
-          lwout = cacheout;
-        stop = 0;
-        $display("RS get %g-%g:%b stop %b", cachein, addres, lwout, stop);
-        readable = 0;
-        for (l = 0; l < 32; l = l + 1) 
-          if (add[l] >> (`GENERAL_RS_SIZE - 1) == 1) begin
-            if (8'b10000000 + geni == ((add[l] >> 10) & 8'b11111111) && ((add[l] >> 1) & 1'b1) == 0) begin
-              tmp2 = add[l] & ((1 << 50) - 1);
-              add[l] = (((add[l] >> 82 << 32) + $unsigned(lwout) << 50) + tmp2) | 2'b10;
+          for (l = 0; l < 32; l = l + 1) 
+            if (add[l] >> (`GENERAL_RS_SIZE - 1) == 1) begin
+              if (queue[head] == ((add[l] >> 10) & 8'b11111111) && ((add[l] >> 1) & 1'b1) == 0) begin
+                qtmp2 = add[l] & ((1 << 50) - 1);
+                add[l] = (((add[l] >> 82 << 32) + $unsigned(lwout) << 50) + qtmp2) | 2'b10;
+              end
+              if (queue[head] == ((add[l] >> 2) & 8'b11111111) && (add[l] & 1'b1) == 0) begin
+                qtmp2 = add[l] & ((1 << 18) - 1);
+                add[l] = (((add[l] >> 50 << 32) + $unsigned(lwout) << 18) + qtmp2) | 2'b01;
+              end
             end
-            if (8'b10000000 + geni == ((add[l] >> 2) & 8'b11111111) && (add[l] & 1'b1) == 0) begin
-              tmp2 = add[l] & ((1 << 18) - 1);
-              add[l] = (((add[l] >> 50 << 32) + $unsigned(lwout) << 18) + tmp2) | 2'b01;
+          for (l = 0; l < 32; l = l + 1) 
+            if (mul[l] >> (`GENERAL_RS_SIZE - 1) == 1) begin
+              if (queue[head] == ((mul[l] >> 10) & 8'b11111111) && ((mul[l] >> 1) & 1'b1) == 0) begin
+                qtmp2 = mul[l] & ((1 << 50) - 1);
+                mul[l] = (((mul[l] >> 82 << 32) + $unsigned(lwout) << 50) + qtmp2) | 2'b10;
+              end
+              if (queue[head] == ((mul[l] >> 2) & 8'b11111111) && (mul[l] & 1'b1) == 0) begin
+                qtmp2 = mul[l] & ((1 << 18) - 1);
+                mul[l] = (((mul[l] >> 50 << 32) + $unsigned(lwout) << 18) + qtmp2) | 2'b01;
+              end
             end
-          end
-        for (l = 0; l < 32; l = l + 1) 
-          if (mul[l] >> (`GENERAL_RS_SIZE - 1) == 1) begin
-            if (8'b10000000 + geni == ((mul[l] >> 10) & 8'b11111111) && ((mul[l] >> 1) & 1'b1) == 0) begin
-              tmp2 = mul[l] & ((1 << 50) - 1);
-              mul[l] = (((mul[l] >> 82 << 32) + $unsigned(lwout) << 50) + tmp2) | 2'b10;
+          for (l = 0; l < 96; l = l + 1) 
+            if (lw[l] >> (`GENERAL_RS_SIZE - 1) == 1) begin
+              if (queue[head] == ((lw[l] >> 10) & 8'b11111111) && ((lw[l] >> 1) & 1'b1) == 0) begin
+                qtmp2 = lw[l] & ((1 << 50) - 1);
+                lw[l] = (((lw[l] >> 82 << 32) + $unsigned(lwout) << 50) + qtmp2) | 2'b10;
+              end
+              if (queue[head] == ((lw[l] >> 2) & 8'b11111111) && (lw[l] & 1'b1) == 0) begin
+                qtmp2 = lw[l] & ((1 << 18) - 1);
+                lw[l] = (((lw[l] >> 50 << 32) + $unsigned(lwout) << 18) + qtmp2) | 2'b01;
+              end
             end
-            if (8'b10000000 + geni == ((mul[l] >> 2) & 8'b11111111) && (mul[l] & 1'b1) == 0) begin
-              tmp2 = mul[l] & ((1 << 18) - 1);
-              mul[l] = (((mul[l] >> 50 << 32) + $unsigned(lwout) << 18) + tmp2) | 2'b01;
+          for (l = 0; l < 32; l = l + 1) 
+            if (sw[l] >> (`SW_RS_SIZE - 1) == 1) begin
+              if (queue[head] == ((sw[l] >> 19) & 8'b11111111) && ((sw[l] >> 2) & 1'b1) == 0) begin
+                qtmp2 = sw[l] & ((1 << 91) - 1);
+                sw[l] = (((sw[l] >> 123 << 32) + $unsigned(lwout) << 91) + qtmp2) | 3'b100;
+              end
+              if (queue[head] == ((sw[l] >> 11) & 8'b11111111) && ((sw[l] >> 1) & 1'b1) == 0) begin
+                qtmp2 = sw[l] & ((1 << 59) - 1);
+                sw[l] = (((sw[l] >> 91 << 32) + $unsigned(lwout) << 59) + qtmp2) | 3'b010;
+              end
+              if (queue[head] == ((sw[l] >> 3) & 8'b11111111) && (sw[l] & 1'b1) == 0) begin
+                qtmp2 = sw[l] & ((1 << 27) - 1);
+                sw[l] = (((sw[l] >> 59 << 32) + $unsigned(lwout) << 27) + qtmp2) | 3'b001;
+              end
             end
-          end
-        for (l = 0; l < 96; l = l + 1) 
-          if (lw[l] >> (`GENERAL_RS_SIZE - 1) == 1) begin
-            if (8'b10000000 + geni == ((lw[l] >> 10) & 8'b11111111) && ((lw[l] >> 1) & 1'b1) == 0) begin
-              tmp2 = lw[l] & ((1 << 50) - 1);
-              lw[l] = (((lw[l] >> 82 << 32) + $unsigned(lwout) << 50) + tmp2) | 2'b10;
+          for (l = 0; l < 64; l = l + 1) 
+            if (rrs[l] == queue[head]) begin
+              rrs[l] = 8'b01111111;
+              rf[l] = lwout;
             end
-            if (8'b10000000 + geni == ((lw[l] >> 2) & 8'b11111111) && (lw[l] & 1'b1) == 0) begin
-              tmp2 = lw[l] & ((1 << 18) - 1);
-              lw[l] = (((lw[l] >> 50 << 32) + $unsigned(lwout) << 18) + tmp2) | 2'b01;
-            end
-          end
-        for (l = 0; l < 32; l = l + 1) 
-          if (sw[l] >> (`SW_RS_SIZE - 1) == 1) begin
-            if (8'b10000000 + geni == ((sw[l] >> 19) & 8'b11111111) && ((sw[l] >> 2) & 1'b1) == 0) begin
-              tmp2 = sw[l] & ((1 << 91) - 1);
-              sw[l] = (((sw[l] >> 123 << 32) + $unsigned(lwout) << 91) + tmp2) | 3'b100;
-            end
-            if (8'b10000000 + geni == ((sw[l] >> 11) & 8'b11111111) && ((sw[l] >> 1) & 1'b1) == 0) begin
-              tmp2 = sw[l] & ((1 << 59) - 1);
-              sw[l] = (((sw[l] >> 91 << 32) + $unsigned(lwout) << 59) + tmp2) | 3'b010;
-            end
-            if (8'b10000000 + geni == ((sw[l] >> 3) & 8'b11111111) && (sw[l] & 1'b1) == 0) begin
-              tmp2 = sw[l] & ((1 << 27) - 1);
-              sw[l] = (((sw[l] >> 59 << 32) + $unsigned(lwout) << 27) + tmp2) | 3'b001;
-            end
-          end
-        for (l = 0; l < 64; l = l + 1) 
-          if (rrs[l] == 8'b10000000 + geni) begin
-            rrs[l] = 8'b01111111;
-            rf[l] = lwout;
-          end
-        $display("lw over %b from RS %b in address %g", lwout, geni, addres);
-        lw[geni] = 0;
+          $display("lw over %b from RS %b in address %g", lwout, queue[head], addreslw);
+          lw[queue[head] - 8'b10000000] = 0;
+        end else begin
+          disable queueloop;
+        end
+      end else begin // sw
+        qtmpsw = sw[queue[head]];
+         addressw = qtmpsw[90:59]+qtmpsw[58:27];
+        if (qtmpsw[2:2] == 1'b1 && qtmpsw[1:1] == 1'b1 && qtmpsw[0:0] == 1'b1) begin
+          write = qtmpsw[122:91];
+          //$display("write %g: %b from %b", addres, write, tmp);
+          cachein = addressw;
+          writable = 1;
+          #0 if (hit !== 1) begin
+            writable = 0;
+            disable queueloop;
+          end else
+            writable = 0;
+          sw[queue[head]] = 0;
+          $display("sw over: %b %b", queue[head], write);
+        end else begin
+          disable queueloop;
+        end
       end
+      head = head + 1;
+      if (head == 96 + 32) head = 0;
     end
   end
-  endgenerate
-  
-  //ALU for sw
-  generate for (geni = 0; geni < 32; geni = geni + 1) begin:czpsw
-    wire[`SW_RS_SIZE-1:0] tmp;
-    reg[`SW_RS_SIZE-1:0] tmp2;
-    assign tmp = sw[geni];
-    wire[`WORD_SIZE-1:0] addres;
-    ADD addd(addres, $signed(tmp[90:59]), $signed(tmp[58:27]));
-    always @(posedge clk) begin:swblock // need condition
-      if (tmp[2:2] == 1'b1 && tmp[1:1] == 1'b1 && tmp[0:0] == 1'b1) begin
-        write = tmp[122:91];
-        //$display("write %g: %b from %b", addres, write, tmp);
-        cachein = addres;
-        writable = 1;
-        #0 if (hit !== 1 || cachein !== addres) begin
-          writable = 0;
-          disable swblock;
-        end else
-          writable = 0;
-        sw[geni] = 0;
-        $display("sw over: %b %b", geni, write);
-      end
-    end
-  end
-  endgenerate
-  
   
   
   reg halt, over;
@@ -331,22 +335,22 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
       for (j = 0; j < 96; j = j + 1)
         if (lw[j] >> (`GENERAL_RS_SIZE - 1) == 1) begin
           over = 0;
-          $display("halt lw %g %b", j, lw[j]);
+          //$display("halt lw %g %b", j, lw[j]);
         end
       for (j = 0; j < 32; j = j + 1)
         if (sw[j] >> (`SW_RS_SIZE - 1) == 1) begin
           over = 0;
-          $display("halt sw %g %b", j, sw[j]);
+          //$display("halt sw %g %b", j, sw[j]);
         end
       for (j = 0; j < 32; j = j + 1)
         if (add[j] >> (`GENERAL_RS_SIZE - 1) == 1) begin
           over = 0;
-          $display("halt add %g %b", j, add[j]);
+          //$display("halt add %g %b", j, add[j]);
         end
       for (j = 0; j < 32; j = j + 1)
         if (mul[j] >> (`GENERAL_RS_SIZE - 1) == 1) begin
           over = 0;
-          $display("halt mul %g %b", j, mul[j]);
+          //$display("halt mul %g %b", j, mul[j]);
         end
       if (over == 1) begin
         $display("over == 1");
@@ -370,7 +374,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
         if (lw[i] >> (`GENERAL_RS_SIZE - 1) == 0) 
           disable loop1;
       end
-      if (i >= 96) 
+      if (i >= 96 || tail + 1 == head || tail + 1 == head + 96 + 32) 
         out = 0; // full
       else begin 
         $display("put lw %b", i);
@@ -392,6 +396,10 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
           end
         end
         rrs[reg1] = i + 8'b10000000;
+        queue[tail] = i + 8'b10000000;
+        tail = tail + 1;
+        if (tail == 96 + 32)
+          tail = 0;
         out = 1;
       end
     end
@@ -401,7 +409,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
         if (sw[i] >> (`SW_RS_SIZE - 1) == 0) 
           disable loop2;
       end
-      if (i >= 32) 
+      if (i >= 32 || tail + 1 == head || tail + 1 == head + 96 + 32) 
         out = 0; // full
       else begin
                 $display("put sw %b", i);
@@ -430,6 +438,10 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
             sw[i] = (((sw[i] >> 91 << 32) + rf[reg2] << 59) + tmp2) | 3'b010;
           end
         end
+        queue[tail] = i;
+        tail = tail + 1;
+        if (tail == 96 + 32)
+          tail = 0;
         out = 1;
       end
     end
