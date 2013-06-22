@@ -216,6 +216,12 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
     tail = 0;
   end
   always @(posedge clk) begin : queueloop
+    $display("head=%g tail=%g queue[head]=%b", head, tail, queue[head]);
+    if (queue[head] >> 7 == 1) 
+      $display("queuelw %b", lw[queue[head] - 8'b10000000]);
+    else
+      $display("queuesw %b", sw[queue[head]]);
+      
     while (head != tail) begin
       if (queue[head] >> 7 == 1) begin //lw
         qtmp = lw[queue[head] - 8'b10000000];
