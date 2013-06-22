@@ -183,7 +183,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
             rf[l] = mulout;
           end
         mul[geni] = 0;
-                    //$display("mul over %g:%b", geni, mulout);
+        //$display("mul over %g:%b", geni, mulout);
       end
     end
   end
@@ -236,6 +236,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
           end else
             lwout = cacheout;
           readable = 0;
+          //$display("lw over %b from queue %g in address %g", lwout, head, addreslw);
           #0 for (l = 0; l < 32; l = l + 1) 
             if (add[l] >> (`GENERAL_RS_SIZE - 1) == 1) begin
               if (queue[head] == ((add[l] >> 10) & 8'b11111111) && ((add[l] >> 1) & 1'b1) == 0) begin
@@ -289,7 +290,6 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
               rrs[l] = 8'b01111111;
               rf[l] = lwout;
             end
-          //$display("lw over %b from RS %b in address %g", lwout, queue[head], addreslw);
           lw[queue[head] - 8'b10000000] = 0;
         end else begin
           disable queueloop;
@@ -307,7 +307,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
           end else
             writable = 0;
           #0 sw[queue[head]] = 0;
-          //$display("sw over: %b %b", queue[head], write);
+          //$display("sw over %b from queue %g in address %g", write, head, addressw);
         end else begin
           disable queueloop;
         end
@@ -373,7 +373,6 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
       if (i >= 96 || tail + 1 == head || tail + 1 == head + 96 + 32) 
         out = 0; // full
       else begin 
-        //$display("put lw %b", i);
         if (hasimm == 0) begin
           lw[i] = ((1'b1 << 32 << 32 << 8) + rrs[reg2] << 8) + rrs[reg3] << 2;
           if (rrs[reg2] == 8'b01111111) begin
@@ -393,6 +392,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
         end
         rrs[reg1] = i + 8'b10000000;
         queue[tail] = i + 8'b10000000;
+        //$display("put lw %b in queue %g head %g", i, tail, head);
         tail = tail + 1;
         if (tail == 96 + 32)
           tail = 0;
@@ -408,7 +408,6 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
       if (i >= 32 || tail + 1 == head || tail + 1 == head + 96 + 32) 
         out = 0; // full
       else begin
-                //$display("put sw %b", i);
         if (hasimm == 0) begin
           sw[i] = (((1'b1 << 32 << 32 << 32 << 8) + rrs[reg1] << 8) + rrs[reg2] << 8) + rrs[reg3] << 3;
           if (rrs[reg1] == 8'b01111111) begin
@@ -436,6 +435,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
         end
         queue[tail] = i;
         tail = tail + 1;
+        //$display("put sw %b in queue %g head %g", i, tail, head);
         if (tail == 96 + 32)
           tail = 0;
         out = 1;
@@ -480,7 +480,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
       end
       if (i >= 32) begin
         out = 0; // full
-        //$display("mul full");
+        //$display("RS mul full");
       end
       else begin 
                 //$display("put mul %b", i);

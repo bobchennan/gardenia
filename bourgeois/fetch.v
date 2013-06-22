@@ -54,24 +54,26 @@ module fetch(clk);
                 //imm
                 hasimm = 1;
                 imm = $signed(inst[15:1]);
-                #0 enable = 1;
+                enable = 1;
                 #0 if(out2==0)begin
-                    unfinish = 1;
+                    enable = 0;
+                    #0 unfinish = 1;
                     disable loop;
                 end
-                idx = idx - `WORD_SIZE;
                 enable = 0;
+                #0 idx = idx - `WORD_SIZE;
               end else begin
                 //reg
                 hasimm = 0;
                 reg3 = inst[15:10];
-                #0 enable = 1;
+                enable = 1;
                 #0 if(out2==0)begin
-                    unfinish = 1;
+                    enable = 0;
+                    #0 unfinish = 1;
                     disable loop;
                 end
-                idx = idx - `WORD_SIZE;
                 enable = 0;
+                #0 idx = idx - `WORD_SIZE;
               end
             end
             4'b1001:begin
@@ -83,24 +85,27 @@ module fetch(clk);
                 //imm
                 hasimm = 1;
                 imm = $signed(inst[15:1]);
-                #0 enable = 1;
+                enable = 1;
                 #0 if(out2==0)begin
-                    unfinish = 1;
+                    //$display("mul full");
+                    enable = 0;
+                    #0 unfinish = 1;
                     disable loop;
                 end
-                idx = idx - `WORD_SIZE;
                 enable = 0;
+                #0 idx = idx - `WORD_SIZE;
               end else begin
                 //reg
                 hasimm = 0;
                 reg3 = inst[15:10];
-                #0 enable = 1;
+                enable = 1;
                 #0 if(out2==0)begin
-                    unfinish = 1;
+                    enable = 0;
+                    #0 unfinish = 1;
                     disable loop;
                 end
-                idx = idx - `WORD_SIZE;
                 enable = 0;
+                #0 idx = idx - `WORD_SIZE;
               end
               //$display("end mul");
             end
@@ -112,19 +117,21 @@ module fetch(clk);
               //enable = 1;
               #0 if(regout!==8'b01111111)begin
                 //$display("bgt not ready, %b", regout);
-                        unfinish = 1;
+                        regread = 0;
+                    #0 unfinish = 1;
                         disable loop;
                     end
               va = regoutrf;
               //$display("reg1: %g, va : %g", reg1, va);
               regread = 0;
               //enable = 0;
-              regin = reg2;
+              #0 regin = reg2;
               regread = 1;
               //enable = 1;
               #0 if(regout!==8'b01111111)begin
                 //$display("bgt not ready, %b", regout);
-                        unfinish = 1;
+                        regread = 0;
+                    #0 unfinish = 1;
                         disable loop;
                     end
               vb = regoutrf;
@@ -132,7 +139,7 @@ module fetch(clk);
               regread = 0;
               //enable = 0;
               //$display("%g:%g %g:%g", reg1, va, reg2, vb);
-              if(va > vb)begin
+              #0 if(va > vb)begin
                 //$display("bgt pc %g idx %g offset %g", $signed(newpc), $signed((992-idx)/8), $signed(inst[15:0]));
                 newpc = $unsigned($signed(newpc) + $signed((992-idx)/8) + $signed(inst[15:0]));
                 idx = 992;
@@ -153,24 +160,28 @@ module fetch(clk);
                 //imm
                 hasimm = 1;
                 imm = $signed(inst[15:1]);
-                #0 enable = 1;
+                enable = 1;
                 #0 if(out2==0)begin
-                    unfinish = 1;
+                    //$display("lw full");
+                    enable = 0;
+                    #0 unfinish = 1;
                     disable loop;
                 end
-                idx = idx - `WORD_SIZE;
                 enable = 0;
+                #0 idx = idx - `WORD_SIZE;
               end else begin
                 //reg
                 hasimm = 0;
                 reg3 = inst[15:10];
-                #0 enable = 1;
+                enable = 1;
                 #0 if(out2==0)begin
-                    unfinish = 1;
+                  //$display("lw full");
+                    enable = 0;
+                    #0 unfinish = 1;
                     disable loop;
                 end
-                idx = idx - `WORD_SIZE;
                 enable = 0;
+                #0 idx = idx - `WORD_SIZE;
               end
             end
             4'b1101:begin
@@ -181,24 +192,28 @@ module fetch(clk);
                 //imm
                 hasimm = 1;
                 imm = $signed(inst[15:1]);
-                #0 enable = 1;
+                enable = 1;
                 #0 if(out2==0)begin
-                    unfinish = 1;
+                  //$display("sw full");
+                    enable = 0;
+                    #0 unfinish = 1;
                     disable loop;
                 end
-                idx = idx - `WORD_SIZE;
                 enable = 0;
+                #0 idx = idx - `WORD_SIZE;
               end else begin
                 //reg
                 hasimm = 0;
                 reg3 = inst[15:10];
-                #0 enable = 1;
+                enable = 1;
                 #0 if(out2==0)begin
-                    unfinish = 1;
+                  $display("sw full");
+                    enable = 0;
+                    #0 unfinish = 1;
                     disable loop;
                 end
-                idx = idx - `WORD_SIZE;
                 enable = 0;
+                #0 idx = idx - `WORD_SIZE;
               end
             end
             4'b1110:begin
@@ -216,23 +231,25 @@ module fetch(clk);
                 hasimm = 1;
                 imm = $signed(inst[21:1]);
                 //$display("cnx %g:%g", reg1, imm);
-                #0 enable = 1;
+                enable = 1;
                 #0 if(out2==0)begin
-                    unfinish = 1;
+                    enable = 0;
+                    #0 unfinish = 1;
                     disable loop;
                 end
-                idx = idx - `WORD_SIZE;
                 enable = 0;
+                #0 idx = idx - `WORD_SIZE;
               end else begin
                 hasimm = 0;
                 reg2 = inst[21:16];
-                #0 enable = 1;
+                enable = 1;
                 #0 if(out2==0)begin
-                    unfinish = 1;
+                    enable = 0;
+                    #0 unfinish = 1;
                     disable loop;
                 end
-                idx = idx - `WORD_SIZE;
                 enable = 0;
+                #0 idx = idx - `WORD_SIZE;
               end
             end
             4'b0000:begin
