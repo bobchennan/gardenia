@@ -2,7 +2,7 @@
 `include "ALU.v"
 `include "datacache.v"
 
-module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin, regout, regoutrf);
+module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin, regout, regoutrf, hit);
   input clk;
   input[2:0] unit; // 000 - lw, 001 - sw, 010 - add, 011 - mul, 100 - mv, 101 - halt
   input[`REG_SIZE-1:0] reg1, reg2, reg3;
@@ -193,12 +193,17 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
   reg readable, writable;
   reg[`WORD_SIZE-1:0] write;
   wire[`WORD_SIZE-1:0] cacheout;
-  wire hit;
+  output hit;
   reg flush;
+  reg stop;
   datacache data(clk, cachein, readable, writable, write, cacheout, hit, flush);
   initial begin
     flush = 0;
+    cachein = 0;
     readable = 0;
+    stop = 0;
+    #0 readable = 1;
+    #1 readable = 0;
     writable = 0;
   end
   //ALU for lw
@@ -213,15 +218,18 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
     always @(posedge clk) begin:lwblock // need condition
       if (tmp[`GENERAL_RS_SIZE-1:`GENERAL_RS_SIZE-1] == 1)
         $display("lw status %b:%b", geni, tmp);
-      if (tmp[1:1] == 1'b1 && tmp[0:0] == 1'b1) begin
+      if (tmp[1:1] == 1'b1 && tmp[0:0] == 1'b1 && stop == 0) begin
         cachein = addres;
         readable = 1;
+        stop = 1;
+        $display("RS begin get %g-%g", cachein, addres);
         #0 if (hit !== 1 || cachein !== addres) begin
           readable = 0;
           disable lwblock;
         end else
           lwout = cacheout;
-        //$display("RS get %g-%g:%b", cachein, addres, lwout);
+        stop = 0;
+        $display("RS get %g-%g:%b stop %b", cachein, addres, lwout, stop);
         readable = 0;
         for (l = 0; l < 32; l = l + 1) 
           if (add[l] >> (`GENERAL_RS_SIZE - 1) == 1) begin

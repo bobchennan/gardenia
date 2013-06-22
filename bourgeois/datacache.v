@@ -23,7 +23,7 @@ module datacache(clk, in, readable, writable, write, out, hit, flush);
   reg[`CACHE_GROUP-1:0] Valid, Dirty;
 
   output hit;
-  assign hit = Tag[index]==tag && Valid[index]; 
+  assign hit = Tag[index]===tag && Valid[index]; 
 
   reg[`BLOCK_SIZE-1:0] cachewrite;
   wire[`BLOCK_SIZE-1:0] ou1, ou2;
@@ -37,6 +37,7 @@ module datacache(clk, in, readable, writable, write, out, hit, flush);
     for (i = 0; i < 8; i = i + 1) begin
       Valid[i] = 0;
       Dirty[i] = 0;
+      //$display("empty %g", i);
     end
     cachereadable = 0;
     cachewritable = 0;
@@ -48,7 +49,7 @@ module datacache(clk, in, readable, writable, write, out, hit, flush);
   always @(writable) begin:czp
     //$display("aa %b %b %b, %b", in, readable, out, Val[index]);
     if (writable == 1) begin
-      if (hit == 1) begin 
+      if (hit === 1) begin 
         tmp = Val[index];
         Val[index] = (((Val[index] >> (`BLOCK_SIZE - offset * `BYTE_SIZE) << 32) + write) 
          << (`BLOCK_SIZE - offset * `BYTE_SIZE -32))
@@ -80,10 +81,10 @@ module datacache(clk, in, readable, writable, write, out, hit, flush);
   end
   always @(readable) begin
     if (readable == 1) begin
-      //$display("cache %g:%b", in, out);
-      if (hit == 1) begin
+      $display("cache %g:%b index %g Tag %b tag %b", in, out, index, Tag[index], tag);
+      if (hit === 1) begin
           out = (Val[index] >> (`BLOCK_SIZE - offset * `BYTE_SIZE - `WORD_SIZE)) & 32'b11111111_11111111_11111111_11111111;
-          //$display("cache hit %g:%b", in, out);
+          $display("cache hit %g", in, out);
       end else begin
         if (Dirty[index] == 1) begin
           cachein = Tag[index] << 10 + index << 7;
@@ -94,12 +95,14 @@ module datacache(clk, in, readable, writable, write, out, hit, flush);
         end
         cachein = in;
         cachereadable = 1;
+        $display("datacache begin wait");
         #`CACHE_MISS_TIME Val[index] = ou1;
+        $display("datacache end wait");
         cachereadable = 0;
         Tag[index] = tag;
         Valid[index] = 1;
         out = (Val[index] >> (`BLOCK_SIZE - offset * `BYTE_SIZE - `WORD_SIZE)) & 32'b11111111_11111111_11111111_11111111;
-        //$display("cache miss %g:%b", in, out);
+        $display("cache miss %g:%b index %g Tag %b tag %b", in, out, index, Tag[index], tag);
         //$display("## %b %b %b", index, Val[index], ou1);
       end
     end
