@@ -1,23 +1,23 @@
 mv $0, 0
 nop
-mv $3, 19
+mv $3, 29
 nop
 bgt $0, $3, L1
 nop
 L2: 
 mv $1, 0
 nop
-mv $4, 19
+mv $4, 29
 nop
 bgt $1, $4, L3
 nop
 L4: 
-mul $5, $0, 80
+mul $5, $0, 120
 mul $6, $1, 120
 mul $7, $0, 120
 mv $8, 0
-mv $9, 1600
-mv $10, 4000
+mv $9, 3600
+mv $10, 7200
 nop
 mul $11, $1, 4
 lw $11, $5, $11

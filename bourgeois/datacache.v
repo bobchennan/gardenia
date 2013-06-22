@@ -57,12 +57,12 @@ module datacache(clk, in, readable, writable, write, out, hit, flush);
         //if(write!=0)$display("cache write %g:%b", in, write);
       end else begin
         if (Dirty[index] == 1) begin
-          cachein = Tag[index] << 3 + index << 7;
+          cachein = ((Tag[index] << 3) + index) << 7;
           cachewrite = Val[index];
+          //$display("write mem tag %b index %b %g %b", Tag[index], index, cachein, cachewrite);
           cachewritable = 1;
           #0 cachewritable = 0;
           #0 cacheflush = cacheflush;
-          //$display("write mem tag %b index %b %g %b", Tag[index], index, cachein, cachewrite);
         end
         cachein = in;
         cachereadable = 1;
@@ -88,12 +88,12 @@ module datacache(clk, in, readable, writable, write, out, hit, flush);
           //$display("cache hit %g:%b", in, out);
       end else begin
         if (Dirty[index] == 1) begin
-          cachein = Tag[index] << 3 + index << 7;
+          cachein = ((Tag[index] << 3) + index) << 7;
           cachewrite = Val[index];
+          //$display("write mem tag %b index %b %g %b", Tag[index], index, cachein, cachewrite);
           cachewritable = 1;
           #0 cachewritable = 0;
           #0 Dirty[index] = 0;
-          //$display("write mem tag %b index %b %g %b", Tag[index], index, cachein, cachewrite);
         end
         cachein = in;
         //$display("cachein=%b",in);
@@ -115,7 +115,7 @@ module datacache(clk, in, readable, writable, write, out, hit, flush);
     if (flush == 1) begin
       for (i = 0; i < 8; i = i + 1) 
         if (Valid[i] == 1 && Dirty[i] == 1) begin
-          cachein = Tag[i] << 3 + i << 7;
+          cachein = ((Tag[i] << 3) + i) << 7;
           cachewrite = Val[i];
           cachewritable = 1;
           #`CACHE_MISS_TIME cachewritable = 0;

@@ -44,7 +44,7 @@ module fetch(clk);
       begin:loop
         while(1)begin
           inst = out >> idx;
-          if(inst!=0)$display("%g,%b", newpc+(992-idx)/8,inst);
+          $display("%g,%b", newpc+(992-idx)/8,inst);
           case(inst>>28)
             4'b1000: begin
               unit = 3'b010;
