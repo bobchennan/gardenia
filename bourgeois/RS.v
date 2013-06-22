@@ -113,7 +113,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
             rf[l] = addout;
           end
         add[geni] = 0;
-        $display("add over %g:%b", geni, addout);
+        //$display("add over %g:%b", geni, addout);
       end
     end
   end
@@ -183,7 +183,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
             rf[l] = mulout;
           end
         mul[geni] = 0;
-                    $display("mul over %g:%b", geni, mulout);
+                    //$display("mul over %g:%b", geni, mulout);
       end
     end
   end
@@ -289,7 +289,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
               rrs[l] = 8'b01111111;
               rf[l] = lwout;
             end
-          $display("lw over %b from RS %b in address %g", lwout, queue[head], addreslw);
+          //$display("lw over %b from RS %b in address %g", lwout, queue[head], addreslw);
           lw[queue[head] - 8'b10000000] = 0;
         end else begin
           disable queueloop;
@@ -307,7 +307,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
           end else
             writable = 0;
           #0 sw[queue[head]] = 0;
-          $display("sw over: %b %b", queue[head], write);
+          //$display("sw over: %b %b", queue[head], write);
         end else begin
           disable queueloop;
         end
@@ -325,7 +325,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
     over = 0;
   end
   always @(halt) begin
-    $display("rs halt %b", halt);
+    //$display("rs halt %b", halt);
     while (halt == 1) begin
       over = 1;
       for (j = 0; j < 96; j = j + 1)
@@ -349,7 +349,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
           //$display("halt mul %g %b", j, mul[j]);
         end
       if (over == 1) begin
-        $display("over == 1");
+        //$display("over == 1");
         flush = 1;
         halt = 0;
       end else begin
@@ -362,7 +362,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
   reg[`GENERAL_RS_SIZE-1:0] tmp2;
   always @(enable) begin
     if (enable == 1) begin
-      $display("%b", unit);
+      //$display("%b", unit);
     case (unit) 
       3'b000: begin // lw
       begin:loop1
@@ -373,7 +373,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
       if (i >= 96 || tail + 1 == head || tail + 1 == head + 96 + 32) 
         out = 0; // full
       else begin 
-        $display("put lw %b", i);
+        //$display("put lw %b", i);
         if (hasimm == 0) begin
           lw[i] = ((1'b1 << 32 << 32 << 8) + rrs[reg2] << 8) + rrs[reg3] << 2;
           if (rrs[reg2] == 8'b01111111) begin
@@ -408,7 +408,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
       if (i >= 32 || tail + 1 == head || tail + 1 == head + 96 + 32) 
         out = 0; // full
       else begin
-                $display("put sw %b", i);
+                //$display("put sw %b", i);
         if (hasimm == 0) begin
           sw[i] = (((1'b1 << 32 << 32 << 32 << 8) + rrs[reg1] << 8) + rrs[reg2] << 8) + rrs[reg3] << 3;
           if (rrs[reg1] == 8'b01111111) begin
@@ -450,7 +450,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
       if (i >= 32) 
         out = 0; // full
       else begin
-                $display("put add %b", i);
+                //$display("put add %b", i);
         if (hasimm == 0) begin
           add[i] = ((1'b1 << 32 << 32 << 8) + rrs[reg2] << 8) + rrs[reg3] << 2;
           if (rrs[reg2] == 8'b01111111) begin
@@ -480,10 +480,10 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
       end
       if (i >= 32) begin
         out = 0; // full
-        $display("mul full");
+        //$display("mul full");
       end
       else begin 
-                $display("put mul %b", i);
+                //$display("put mul %b", i);
         if (hasimm == 0) begin
           mul[i] = ((1'b1 << 32 << 32 << 8) + rrs[reg2] << 8) + rrs[reg3] << 2;
           if (rrs[reg2] == 8'b01111111) begin
@@ -501,7 +501,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
             mul[i] = (((mul[i] >> 82 << 32) + rf[reg2] << 50) + tmp2) | 2'b10;
           end
         end
-        $display("put mul value %b", mul[i]);
+        //$display("put mul value %b", mul[i]);
         rrs[reg1] = i + 8'b01000000;
         out = 1;
       end
@@ -516,7 +516,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
         if (i >= 32) 
           out = 0; // full
         else begin
-                  $display("put mv(add) %b", i);
+                  //$display("put mv(add) %b", i);
           add[i] = ((1'b1 << 32 << 32) + rrs[reg2] << 8 << 2) + 1'b1;
           if (rrs[reg2] == 8'b01111111) begin
             tmp2 = add[i] & ((1 << 50) - 1);
@@ -526,7 +526,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
           out = 1;
         end
       end else begin
-        $display("imm mv reg1: %g", reg1);
+        //$display("imm mv reg1: %g", reg1);
         rrs[reg1] = 8'b01111111;
         rf[reg1] = imm;
         out = 1;

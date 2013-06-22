@@ -19,7 +19,7 @@ module datamem(clk, in, readable, writable, write, out1, out2, flush);
   
   always @(writable) begin
     if (writable == 1) begin
-        $display("write %g %b", in, write);
+        //$display("write %g %b", in, write);
         for (i = 0; i < `BLOCK_SIZE / `BYTE_SIZE; i = i + 1) 
           data[(in >> 7 << 7) + i] = (write >> (`BLOCK_SIZE - `BYTE_SIZE * (i+1))) & 8'b11111111;
     end
@@ -38,7 +38,7 @@ module datamem(clk, in, readable, writable, write, out1, out2, flush);
     end
   end
   always @(flush) begin
-    $display("datamem halt %b", flush);
+    //$display("datamem halt %b", flush);
     if (flush == 1) begin: cpures
       integer outfile, i;
       outfile =  $fopen("cpures.txt");

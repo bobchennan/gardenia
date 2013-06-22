@@ -54,7 +54,7 @@ module datacache(clk, in, readable, writable, write, out, hit, flush);
          << (`BLOCK_SIZE - offset * `BYTE_SIZE -32))
          + (tmp & ((1 << (`BLOCK_SIZE - offset * `BYTE_SIZE -32)) - 1));
         Dirty[index] = 1;
-        $display("cache write %g:%b", in, write);
+        //$display("cache write %g:%b", in, write);
       end else begin
         #`CACHE_MISS_TIME 
         if (Dirty[index] == 1) begin
@@ -74,7 +74,7 @@ module datacache(clk, in, readable, writable, write, out, hit, flush);
          << (`BLOCK_SIZE - offset * `BYTE_SIZE -32)) 
          + (tmp & ((1 << (`BLOCK_SIZE - offset * `BYTE_SIZE -32)) - 1));
         Dirty[index] = 1;
-        $display("cache write %g:%b", in, write);
+        //$display("cache write %g:%b", in, write);
       end
     end
   end
@@ -83,7 +83,7 @@ module datacache(clk, in, readable, writable, write, out, hit, flush);
       //$display("cache %g:%b", in, out);
       if (hit === 1) begin
           out = (Val[index] >> (`BLOCK_SIZE - offset * `BYTE_SIZE - `WORD_SIZE)) & 32'b11111111_11111111_11111111_11111111;
-          $display("cache hit %g:%b", in, out);
+          //$display("cache hit %g:%b", in, out);
       end else begin
         if (Dirty[index] == 1) begin
           cachein = Tag[index] << 10 + index << 7;
@@ -93,7 +93,7 @@ module datacache(clk, in, readable, writable, write, out, hit, flush);
           Dirty[index] = 0;
         end
         cachein = in;
-        $display("cachein=%b",in);
+        //$display("cachein=%b",in);
         cachereadable = 1;
         #`CACHE_MISS_TIME Val[index] = ou1;
         cachereadable = 0;
@@ -107,7 +107,7 @@ module datacache(clk, in, readable, writable, write, out, hit, flush);
   end
   
   always @(flush) begin
-    $display("datacache halt %b", flush);
+    //$display("datacache halt %b", flush);
     if (flush == 1) begin
       for (i = 0; i < 8; i = i + 1) 
         if (Valid[i] == 1 && Dirty[i] == 1) begin
