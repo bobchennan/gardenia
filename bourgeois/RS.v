@@ -181,9 +181,9 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
           if (rrs[l] == 8'b01000000 + geni) begin
             rrs[l] = 8'b01111111;
             rf[l] = mulout;
-            $display("mul over %g:%b", l, mulout);
           end
         mul[geni] = 0;
+                    $display("mul over %g:%b", geni, mulout);
       end
     end
   end
@@ -236,7 +236,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
           end else
             lwout = cacheout;
           readable = 0;
-          for (l = 0; l < 32; l = l + 1) 
+          #0 for (l = 0; l < 32; l = l + 1) 
             if (add[l] >> (`GENERAL_RS_SIZE - 1) == 1) begin
               if (queue[head] == ((add[l] >> 10) & 8'b11111111) && ((add[l] >> 1) & 1'b1) == 0) begin
                 qtmp2 = add[l] & ((1 << 50) - 1);
@@ -306,7 +306,7 @@ module RS(clk, unit, reg1, reg2, reg3, hasimm, imm, enable, out, regread, regin,
             #(`CACHE_MISS_TIME+1) writable = 0;
           end else
             writable = 0;
-          sw[queue[head]] = 0;
+          #0 sw[queue[head]] = 0;
           $display("sw over: %b %b", queue[head], write);
         end else begin
           disable queueloop;
